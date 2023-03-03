@@ -14,8 +14,7 @@ int main(int argc, char* argv[])
 {
 	// donghyun : 두 매니저는 싱글톤으로 사용
 	NetworkManager& networkManager = NetworkManager::getInstance();
-	networkManager.init(argc, argv);
-
+	//networkManager.init(argc, argv);
 	networkManager.execute();
 	return 0;
 }

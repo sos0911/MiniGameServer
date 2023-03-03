@@ -75,8 +75,8 @@ private:
 	int adrSize = 0;
 	int strLen = 0, fdNum = 0;
 
-	int argc = 0;
-	char** argv = nullptr;
+	//int argc = 0;
+	//char** argv = nullptr;
 
 public:
 
@@ -86,11 +86,20 @@ public:
 	//NetworkManager();
 	//virtual ~NetworkManager() {}
 
-	void init(int argc, char* argv[]);
+	//void init(int argc, char* argv[]);
+
 	void execute();
 	void ErrorHandling(const char* message);
 	void sendMsg(const std::string playerName, const std::string& msg);
 	void sendMsg(const SOCKET clntFd, const std::string& msg);
 	void closeClient(const SOCKET clntfd);
 	void parseAndSelectComm(std::string& parsingMsg, const SOCKET clntfd);
+
+	template< class PacketType >
+	void sendPacket(const SOCKET clntFd, const PacketType& packet, const unsigned short packetSize)
+	{
+		const char* packetStr = reinterpret_cast<const char*>(&packet);
+		send(clntFd, packetStr, packetSize, 0);
+
+	}
 };
