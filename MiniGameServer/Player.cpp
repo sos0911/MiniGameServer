@@ -1,3 +1,5 @@
+#include "pch.h"
+
 #include "Player.h"
 #include <algorithm>
 #include <iterator>

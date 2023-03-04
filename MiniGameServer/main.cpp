@@ -1,8 +1,9 @@
-﻿#include <cstring>
+﻿#include "pch.h"
+
+#include <cstring>
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
-#include <WinSock2.h>
 #include <string>
 #include "NetworkManager.h"
 #include "ServerManager.h"

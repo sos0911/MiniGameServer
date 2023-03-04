@@ -1,3 +1,5 @@
+#include "pch.h"
+
 #include "ServerManager.h"
 #include "NetworkManager.h"
 #include <iostream>
@@ -284,11 +286,11 @@ void ServerManager::broadCastChatInRoom(SOCKET clntfd, int roomNum, std::string&
 				std::string subMsg = iterPtr->m_buf;
 				if (iterPtr->m_fd != clntfd)
 				{
-					if (iterPtr->m_totalStrLen != 0)
+					if (iterPtr->m_bufStartIdx != 0)
 					{
 						NetworkManager::getInstance().sendMsg(iterPtr->m_fd, "\n\r");
 						NetworkManager::getInstance().sendMsg(iterPtr->m_fd, broadMsg);
-						NetworkManager::getInstance().sendMsg(iterPtr->m_fd, subMsg.substr(0, playerPtr->m_totalStrLen));
+						NetworkManager::getInstance().sendMsg(iterPtr->m_fd, subMsg.substr(0, playerPtr->m_bufStartIdx));
 					}
 					else
 					{

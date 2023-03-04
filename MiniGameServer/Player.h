@@ -1,9 +1,6 @@
 #pragma once
 #include <string>
-#include <vector>
 #include "ServerProtocol.h"
-
-class SOCKET;
 
 class Player
 {

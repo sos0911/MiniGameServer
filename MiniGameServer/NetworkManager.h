@@ -100,6 +100,5 @@ public:
 	{
 		const char* packetStr = reinterpret_cast<const char*>(&packet);
 		send(clntFd, packetStr, packetSize, 0);
-
 	}
 };

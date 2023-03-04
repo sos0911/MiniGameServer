@@ -1,3 +1,5 @@
+#include "pch.h"
+
 #include "Packet.h"
 
 LoginPacket::LoginPacket(bool In_LoginSuccess)

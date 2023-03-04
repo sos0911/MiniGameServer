@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "Player.h"
 #include "Room.h"
 #include <map>
