@@ -77,7 +77,7 @@ void ServerManager::showChatHelp(const SOCKET clntfd)
 	NetworkManager::getInstance().sendMsg(clntfd, msg);
 }
 
-void ServerManager::createRoom(const SOCKET clntfd, std::string& maxCntStr, std::string& roomName)
+void ServerManager::createRoom(const SOCKET clntfd, const std::string& maxCntStr, const std::string& roomName)
 {
 	Player* playerPtr = findPlayerUsingfd(clntfd);
 	if (playerPtr)
@@ -318,6 +318,61 @@ void ServerManager::broadCastInRoom(int roomNum, std::string& msg)
 	}
 }
 
+void ServerManager::broadCastPacketInRoom(int roomNum, Packet::PacketID packetID, void* packet)
+{
+	if (roomList.find(roomNum) == roomList.end())
+	{
+		return;
+	}
+
+	Room& room = roomList[roomNum];
+
+	switch (packetID)
+	{
+	case Packet::PacketID::PLAY:
+	{
+		Packet::LoginRequestPacket loginRequestPacket = *(Packet::LoginRequestPacket*)(packetChar);
+
+		Player* playerPtr = ServerManager::getInstance().findPlayerUsingfd(m_fd);
+		if (!playerPtr)
+		{
+			Packet::LoginResultPacket loginPacket(false);
+			NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
+			return;
+		}
+		if (ServerManager::getInstance().findPlayerUsingName(loginRequestPacket.LoginNickname))
+		{
+			Packet::LoginResultPacket loginPacket(false);
+			NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
+			return;
+		}
+		playerPtr->m_name = loginRequestPacket.LoginNickname;
+
+		// donghyun : 테스트용으로 한 방에 집어 넣음
+		ServerManager::getInstance().joinRoom(2, m_fd);
+
+		Packet::LoginResultPacket loginPacket(true);
+		NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
+		break;
+	}
+	case Packet::PacketID::SPAWN:
+	{
+		break;
+	}
+	default:
+	{
+		break;
+	}
+	}
+
+	for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
+	{
+		// donghyun : 자기 자신도 브로드캐스팅함
+		auto& playerInfo = iter->second;
+		NetworkManager::getInstance().sendPacket(playerInfo.first->m_fd, packet, );
+	}
+}
+
 void ServerManager::quitPlayer(const SOCKET clntfd)
 {
 	Player* playerPtr = findPlayerUsingfd(clntfd);
@@ -359,6 +414,11 @@ void ServerManager::quitRoom(const int roomNum, Player* playerPtr)
 bool ServerManager::addPlayer(Player& player)
 {
 	return playerList.insert({ player.m_fd, player }).second;
+}
+
+int ServerManager::getPlayerNum()
+{
+	return playerList.size();
 }
 
 // donghyun : 만약 못찾았을 때는 nullptr 반환

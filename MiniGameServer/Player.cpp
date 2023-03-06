@@ -62,31 +62,16 @@ void Player::decomposePacket(const char* packetChar)
 			return;
 		}
 		playerPtr->m_name = loginRequestPacket.LoginNickname;
+
+		// donghyun : 테스트용으로 한 방에 집어 넣음
+		ServerManager::getInstance().joinRoom(2, m_fd);
+
 		Packet::LoginResultPacket loginPacket(true);
 		NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
 		break;
 	}
 	case Packet::PacketID::MAKEROOMREQUEST:
 	{
-		Packet::MAKEROOMREQUEST makeRoomRequest = *(Packet::MAKEROOMREQUEST*)(packetChar);
-
-		Player* playerPtr = ServerManager::getInstance().findPlayerUsingfd(m_fd);
-		if (!playerPtr)
-		{
-			Packet::LoginResultPacket loginPacket(false);
-			NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
-			return;
-		}
-		if (ServerManager::getInstance().findPlayerUsingName(loginRequestPacket.LoginNickname))
-		{
-			Packet::LoginResultPacket loginPacket(false);
-			NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
-			return;
-		}
-		playerPtr->m_name = loginRequestPacket.LoginNickname;
-		Packet::LoginResultPacket loginPacket(true);
-		NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
-		break;
 		break;
 	}
 	case Packet::PacketID::JOINROOMREQUEST:

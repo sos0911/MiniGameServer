@@ -32,7 +32,7 @@ public:
 	void login(SOCKET clntfd, std::vector<std::string>& splitStrList);
 	void showHelp(const SOCKET clntfd);
 	void showChatHelp(const SOCKET clntfd);
-	void createRoom(const SOCKET clntfd, std::string& maxCntStr, std::string& roomName);
+	void createRoom(const SOCKET clntfd, const std::string& maxCntStr, const std::string& roomName);
 	void sendWhisper(std::vector<std::string>& splitStrList, const SOCKET clntfd);
 	void showRoomInfo(int roomNum, const SOCKET clntfd);
 	void showRoomList(const SOCKET clntfd);
@@ -49,6 +49,8 @@ public:
 	void quitPlayer(const SOCKET clntfd);
 	void quitRoom(const int roomNum, Player* playerPtr);
 	bool addPlayer(Player& player);
+	int getPlayerNum();
+
 	Player* findPlayerUsingfd(const SOCKET clntfd);
 	Player* findPlayerUsingName(const std::string& playerName);
 

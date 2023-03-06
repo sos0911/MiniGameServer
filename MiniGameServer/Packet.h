@@ -52,6 +52,13 @@ namespace Packet
 		char LoginNickname[PacketProtocol::NICKNAME_MAXSIZE];
 	};
 
+	struct PlayPacket
+	{
+		unsigned short packetSize;
+		// donghyun : timer
+
+	};
+
 	struct MakeRoomResultPacket
 
 	{
