@@ -331,28 +331,14 @@ void ServerManager::broadCastPacketInRoom(int roomNum, Packet::PacketID packetID
 	{
 	case Packet::PacketID::PLAY:
 	{
-		Packet::LoginRequestPacket loginRequestPacket = *(Packet::LoginRequestPacket*)(packet);
+		Packet::PlayPacket playPacket = *(Packet::PlayPacket*)(packet);
 
-		Player* playerPtr = ServerManager::getInstance().findPlayerUsingfd(m_fd);
-		if (!playerPtr)
+		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
 		{
-			Packet::LoginResultPacket loginPacket(false);
-			NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
-			return;
+			auto playerInfo = iter->second.first;
+			NetworkManager::getInstance().sendPacket(playerInfo->m_fd, playPacket, playPacket.packetSize);
 		}
-		if (ServerManager::getInstance().findPlayerUsingName(loginRequestPacket.LoginNickname))
-		{
-			Packet::LoginResultPacket loginPacket(false);
-			NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
-			return;
-		}
-		playerPtr->m_name = loginRequestPacket.LoginNickname;
 
-		// donghyun : 테스트용으로 한 방에 집어 넣음
-		ServerManager::getInstance().joinRoom(2, m_fd);
-
-		Packet::LoginResultPacket loginPacket(true);
-		NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
 		break;
 	}
 	case Packet::PacketID::SPAWN:

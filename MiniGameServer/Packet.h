@@ -16,7 +16,9 @@ namespace Packet
 	enum class PacketID : unsigned char
 	{
 		PLAY,
+		UPDATE,
 		SKILL,
+		SPAWN,
 		LOGINREQUEST,
 		LOGINRESULT,
 		MAKEROOMREQUEST,
@@ -55,9 +57,19 @@ namespace Packet
 	struct PlayPacket
 	{
 		unsigned short packetSize;
-		// donghyun : timer
-		char time_str[6];
-		
+		PacketID packetID;
+		unsigned short playerIdx;
+		float posVec[3];
+		float rotVec[3];
+		PlayPacket(int InfoMapIdx);
+	};
+
+	struct UpdatePacket
+	{
+		unsigned short packetSize;
+		PacketID packetID;
+		float posVec[3];
+		float rotVec[3];
 	};
 
 	struct MakeRoomResultPacket

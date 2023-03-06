@@ -15,6 +15,13 @@ public:
 	int m_bufStartIdx = 0;
 	char m_buf[PacketProtocol::BUF_MAXSIZE] = { 0 };
 
+	// donghyun : player pos, rot
+	float m_position[3] = { 0.0f };
+	float m_rotation[3] = { 0.0f };
+
+	// donghyun : playerInfo idx
+	int m_infoMapIdx = -1;
+
 	//donghyun : 맨 처음 클라 소켓 연결 요청 시 이름이 없을 때 사용하는 생성자
 	Player(char ip[], u_short port, SOCKET fd, std::string name);
 	Player(SOCKET clntFd);

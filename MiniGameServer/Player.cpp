@@ -12,6 +12,7 @@
 Player::Player(char ip[], u_short port, SOCKET fd, std::string name) :
 	m_ip(ip), m_port(port), m_fd(fd), m_name(name)
 {
+	m_infoMapIdx = ServerManager::getInstance().getPlayerNum() + 1;
 }
 
 Player::Player(SOCKET clntFd) :
@@ -63,8 +64,17 @@ void Player::decomposePacket(const char* packetChar)
 		}
 		playerPtr->m_name = loginRequestPacket.LoginNickname;
 
-		// donghyun : 테스트용으로 한 방에 집어 넣음
-		ServerManager::getInstance().joinRoom(2, m_fd);
+		// donghyun : test code
+		if (ServerManager::getInstance().getPlayerNum() == 1)
+		{
+			// donghyun : 자기 자신밖에 없을 시 방 팜
+			ServerManager::getInstance().createRoom(m_fd, "5", "test");
+		}
+		else
+		{
+			// donghyun : 테스트용으로 한 방에 집어 넣음
+			ServerManager::getInstance().joinRoom(2, m_fd);
+		}
 
 		Packet::LoginResultPacket loginPacket(true);
 		NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
@@ -76,6 +86,49 @@ void Player::decomposePacket(const char* packetChar)
 	}
 	case Packet::PacketID::JOINROOMREQUEST:
 	{
+		break;
+	}
+	case Packet::PacketID::UPDATE:
+	{
+		/*struct UpdatePacket
+		{
+			unsigned short packetSize;
+			PacketID packetID;
+			unsigned short playerIdx;
+			float posVec[3];
+			float rotVec[3];
+		};*/
+
+		Packet::UpdatePacket updatePacket = *(Packet::UpdatePacket*)(packetChar);
+		Player* playerPtr = ServerManager::getInstance().findPlayerUsingfd(m_fd);
+		if (!playerPtr)
+		{
+			return;
+		}
+		
+		// donghyun : pos, rot update
+		for (int i = 0; i < 3; i++)
+		{
+			playerPtr->m_position[i] = updatePacket.posVec[i];
+			playerPtr->m_rotation[i] = updatePacket.rotVec[i];
+		}
+
+		int roomNum = ServerManager::getInstance().getChatRoomNum(m_fd);
+		if(roomNum == -2)
+		{
+			return;
+		}
+		
+		// donghyun : playpacket 제작
+		int playerIdx = m_infoMapIdx;
+		Packet::PlayPacket playPacket(playerPtr->m_infoMapIdx);
+		for (int i = 0; i < 3; i++)
+		{
+			playPacket.posVec[i] = playerPtr->m_position[i];
+			playPacket.rotVec[i] = playerPtr->m_rotation[i];
+		}
+		ServerManager::getInstance().broadCastPacketInRoom(roomNum, Packet::PacketID::PLAY, &playPacket);
+
 		break;
 	}
 	default:

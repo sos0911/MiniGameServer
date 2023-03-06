@@ -58,9 +58,6 @@ void NetworkManager::execute()
 
 	fd_set cpyReads;
 
-	// donghyun : 일단 테스트용으로 방 하나 생성
-	ServerManager::getInstance().createRoom(m_fd, "5", "test");
-
 	while (1)
 	{
 		cpyReads = reads;
@@ -75,6 +72,9 @@ void NetworkManager::execute()
 		{
 			continue;
 		}
+
+		// donghyun : 일단 테스트용으로 방 하나 생성
+		ServerManager::getInstance().createRoom(m_fd, "5", "test");
 
 		for (u_int i = 0; i < reads.fd_count; ++i)
 		{
@@ -142,13 +142,6 @@ void NetworkManager::execute()
 					}
 				}
 			}
-		}
-
-		// donghyun : 2명 이상 들어왔는지 검사
-		if (ServerManager::getInstance().getPlayerNum() >= 2)
-		{
-			//ServerManager::getInstance().broadCastChatInRoom()
-			ServerManager::getInstance().broadCastPacketInRoom(2, Packet::PlayPacket);
 		}
 	}
 	closesocket(hServsock);
