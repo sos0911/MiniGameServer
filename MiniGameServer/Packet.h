@@ -56,7 +56,8 @@ namespace Packet
 	{
 		unsigned short packetSize;
 		// donghyun : timer
-
+		char time_str[6];
+		
 	};
 
 	struct MakeRoomResultPacket

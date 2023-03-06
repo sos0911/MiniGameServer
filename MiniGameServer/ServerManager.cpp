@@ -331,7 +331,7 @@ void ServerManager::broadCastPacketInRoom(int roomNum, Packet::PacketID packetID
 	{
 	case Packet::PacketID::PLAY:
 	{
-		Packet::LoginRequestPacket loginRequestPacket = *(Packet::LoginRequestPacket*)(packetChar);
+		Packet::LoginRequestPacket loginRequestPacket = *(Packet::LoginRequestPacket*)(packet);
 
 		Player* playerPtr = ServerManager::getInstance().findPlayerUsingfd(m_fd);
 		if (!playerPtr)
