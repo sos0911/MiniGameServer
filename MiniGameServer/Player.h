@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "ServerProtocol.h"
+#include "Packet.h"
 
 class Player
 {
@@ -13,7 +13,7 @@ public:
 	int m_roomNum = -1;
 
 	int m_bufStartIdx = 0;
-	char m_buf[PacketProtocol::BUF_SIZE] = { 0 };
+	char m_buf[PacketProtocol::BUF_MAXSIZE] = { 0 };
 
 	//donghyun : 맨 처음 클라 소켓 연결 요청 시 이름이 없을 때 사용하는 생성자
 	Player(char ip[], u_short port, SOCKET fd, std::string name);
@@ -21,5 +21,5 @@ public:
 	Player();
 	Player(const Player& player);
 	std::string getInfoStr();
-	void decomposePacket(const char assmeblePacket[]);
+	void decomposePacket(const char* assmeblePacket);
 };

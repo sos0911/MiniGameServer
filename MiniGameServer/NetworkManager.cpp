@@ -1,13 +1,17 @@
 #include "pch.h"
 
 #include "NetworkManager.h"
+#include "ServerManager.h"
 #include <sstream>
-#include <vector>
 #include <iostream>
 #include <algorithm>
 #include <format>
 #include <WS2tcpip.h>
 #include "Packet.h"
+#include "Player.h"
+
+#include <string>
+#include <vector>
 
 NetworkManager::NetworkManager()
 {
@@ -19,19 +23,8 @@ NetworkManager::NetworkManager()
 	reads = { 0 };
 }
 
-//void NetworkManager::init(int in_argc, char* in_argv[])
-//{
-//	argc = in_argc;
-//	argv = in_argv;
-//}
-
 void NetworkManager::execute()
 {
-	/*if (argc != 2)
-	{
-		printf("usage : %s <port>\n", argv[0]);
-		exit(1);
-	}*/
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 	{
@@ -120,7 +113,7 @@ void NetworkManager::execute()
 					continue;
 				}
 
-				int strLen = recv(playerPtr->m_fd, playerPtr->m_buf + playerPtr->m_bufStartIdx, BUF_SIZE - 1, 0);
+				int strLen = recv(playerPtr->m_fd, playerPtr->m_buf + playerPtr->m_bufStartIdx, PacketProtocol::BUF_MAXSIZE - playerPtr->m_bufStartIdx, 0);
 
 				if (strLen == 0)
 				{
@@ -130,21 +123,17 @@ void NetworkManager::execute()
 				// donghyun : 받은 게 뭐라도 있는 경우
 				else
 				{
-					LoginPacket loginPacket(true);
-					NetworkManager::getInstance().sendPacket(playerPtr->m_fd, loginPacket, loginPacket.packetSize);
-
 					playerPtr->m_bufStartIdx += strLen;
 
-					// donghyun : 가장 앞에 있는 패킷사이즈 얻어오기
 					unsigned short packetSize = *(unsigned short*)playerPtr->m_buf;
 
 					if (playerPtr->m_bufStartIdx >= packetSize)
 					{
 						playerPtr->m_buf[playerPtr->m_bufStartIdx] = '\0';
 						// donghyun : 패킷 내용을 char[]에 복사, 처리 넘김
-						char packetChar[PacketProtocol::MAXPACKETSIZE];
-						memcpy_s(&packetChar, PacketProtocol::MAXPACKETSIZE, playerPtr->m_buf, packetSize);
-						memcpy_s(&playerPtr->m_buf, PacketProtocol::MAXPACKETSIZE, playerPtr->m_buf + packetSize, playerPtr->m_bufStartIdx - packetSize);
+						char packetChar[PacketProtocol::PACKET_MAXSIZE];
+						memcpy_s(&packetChar, PacketProtocol::PACKET_MAXSIZE, playerPtr->m_buf, packetSize);
+						memcpy_s(&playerPtr->m_buf, PacketProtocol::PACKET_MAXSIZE, playerPtr->m_buf + packetSize, playerPtr->m_bufStartIdx - packetSize);
 						playerPtr->decomposePacket(packetChar);
 						playerPtr->m_bufStartIdx -= packetSize;
 					}

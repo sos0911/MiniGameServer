@@ -2,16 +2,19 @@
 
 #include "Packet.h"
 
-LoginPacket::LoginPacket(bool In_LoginSuccess)
+namespace Packet
 {
-	packetSize = sizeof(int) + sizeof(PacketID) + sizeof(bool);
-	packetID = PacketID::LOGIN;
-	LoginSuccess = In_LoginSuccess;
-}
+	LoginResultPacket::LoginResultPacket(bool In_LoginSuccess)
+	{
+		packetSize = sizeof(int) + sizeof(PacketID) + sizeof(bool);
+		packetID = PacketID::LOGINRESULT;
+		LoginSuccess = In_LoginSuccess;
+	}
 
-JoinRoomPacket::JoinRoomPacket(bool In_JoinRoomSuccess)
-{
-	packetSize = sizeof(int) + sizeof(PacketID) + sizeof(bool);
-	packetID = PacketID::JOINROOM;
-	JoinRoomSuccess = In_JoinRoomSuccess;
+	JoinRoomResultPacket::JoinRoomResultPacket(bool In_JoinRoomSuccess)
+	{
+		packetSize = sizeof(int) + sizeof(PacketID) + sizeof(bool);
+		packetID = PacketID::JOINROOMRESULT;
+		JoinRoomSuccess = In_JoinRoomSuccess;
+	}
 }

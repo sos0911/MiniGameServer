@@ -1,10 +1,10 @@
 #pragma once
-#include "Player.h"
-#include "Room.h"
 #include <map>
+#include <vector>
 #include <WinSock2.h>
-#include "NetworkManager.h"
 #include "Singleton.h"
+#include "Room.h"
+#include "Player.h"
 
 class ServerManager : public Singleton<ServerManager>
 {

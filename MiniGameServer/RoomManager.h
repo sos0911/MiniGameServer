@@ -2,8 +2,6 @@
 #include <map>
 #include "Singleton.h"
 
-class map;
-
 class RoomManager : public Singleton<RoomManager>
 {
 private:

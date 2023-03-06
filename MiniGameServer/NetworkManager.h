@@ -1,18 +1,10 @@
 #pragma once
-#include <cstring>
-#include <iostream>
-#include <cstdio>
-#include <cstdlib>
 #include <WinSock2.h>
 #include <string>
-#include <set>
 #include <map>
-#include "ServerManager.h"
 #include "Singleton.h"
 
-
-#define BUF_SIZE 1024
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
+//#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 enum class Command
 {

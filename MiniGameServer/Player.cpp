@@ -6,6 +6,7 @@
 #include <iostream>
 #include <format>
 #include "ServerManager.h"
+#include "NetworkManager.h"
 #include "Packet.h"
 
 Player::Player(char ip[], u_short port, SOCKET fd, std::string name) :
@@ -34,45 +35,65 @@ std::string Player::getInfoStr()
 	return std::format("이용자: {}              접속지 : {} : {}", m_name, m_ip, m_port);
 }
 
-void Player::decomposePacket(const char packetChar[])
+void Player::decomposePacket(const char* packetChar)
 {
 	// donghyun : 패킷 분해 후 struct 조립
-	PacketID packetID;
-	std::memcpy(&packetID, &packetChar[1], sizeof(PacketID));
+	unsigned short packetSize = *(unsigned short*)packetChar;
+	Packet::PacketID packetID = *(Packet::PacketID*)(packetChar + sizeof(unsigned short));
+	//std::memcpy(&packetID, &packetChar[1], sizeof(Packet::PacketID));
 	
 	switch (packetID)
 	{
-	case PacketID::LOGIN:
+	case Packet::PacketID::LOGINREQUEST:
 	{
-		std::string loginID = "";
-		std::memcpy(&loginID, &packetChar[2], packetChar[0] - sizeof(packetChar[0]) - sizeof(PacketID));
+		Packet::LoginRequestPacket loginRequestPacket = *(Packet::LoginRequestPacket*)(packetChar);
+
 		Player* playerPtr = ServerManager::getInstance().findPlayerUsingfd(m_fd);
 		if (!playerPtr)
 		{
-			LoginPacket loginPacket(false);
+			Packet::LoginResultPacket loginPacket(false);
 			NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
 			return;
 		}
-		if (ServerManager::getInstance().findPlayerUsingName(loginID))
+		if (ServerManager::getInstance().findPlayerUsingName(loginRequestPacket.LoginNickname))
 		{
-			LoginPacket loginPacket(false);
+			Packet::LoginResultPacket loginPacket(false);
 			NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
 			return;
 		}
-		playerPtr->m_name = loginID;
-		LoginPacket loginPacket(true);
+		playerPtr->m_name = loginRequestPacket.LoginNickname;
+		Packet::LoginResultPacket loginPacket(true);
 		NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
 		break;
 	}
-	case PacketID::JOINROOM:
+	case Packet::PacketID::MAKEROOMREQUEST:
+	{
+		Packet::MAKEROOMREQUEST makeRoomRequest = *(Packet::MAKEROOMREQUEST*)(packetChar);
+
+		Player* playerPtr = ServerManager::getInstance().findPlayerUsingfd(m_fd);
+		if (!playerPtr)
+		{
+			Packet::LoginResultPacket loginPacket(false);
+			NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
+			return;
+		}
+		if (ServerManager::getInstance().findPlayerUsingName(loginRequestPacket.LoginNickname))
+		{
+			Packet::LoginResultPacket loginPacket(false);
+			NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
+			return;
+		}
+		playerPtr->m_name = loginRequestPacket.LoginNickname;
+		Packet::LoginResultPacket loginPacket(true);
+		NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
+		break;
+		break;
+	}
+	case Packet::PacketID::JOINROOMREQUEST:
 	{
 		break;
 	}
-	case PacketID::PLAY:
-	{
-		break;
-	}
-	case PacketID::SKILL:
+	default:
 	{
 		break;
 	}
