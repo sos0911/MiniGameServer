@@ -9,6 +9,9 @@ namespace PacketProtocol
 namespace ServerProtocol
 {
 	constexpr unsigned short ROOMNAME_MAXSIZE = 32;
+	// donghyun : ms ¥‹¿ß
+	constexpr unsigned int TIMER_UPDATE_PERIOD = 1000;
+	constexpr unsigned int TASK_UPDATE_PERIOD = 50;
 }
 #pragma pack(push,1)
 namespace Packet

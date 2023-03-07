@@ -135,6 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BaseTaskManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetworkManager.cpp" />
     <ClCompile Include="Packet.cpp" />
@@ -148,6 +149,7 @@
     <ClCompile Include="ServerManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BaseTaskManager.h" />
     <ClInclude Include="NetworkManager.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="pch.h" />

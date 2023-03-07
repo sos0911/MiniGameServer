@@ -441,6 +441,54 @@ int ServerManager::getPlayerNum()
 	return playerList.size();
 }
 
+void ServerManager::RunTimer()
+{
+	//타이머 만들기
+	m_timerThread = static_cast<std::jthread>
+		([this](std::stop_token stoken)
+	{
+		while (!stoken.stop_requested())
+		{
+			UpdateRoomTimer();
+			// 1초마다 작동하는 타이머
+			std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(1000));
+		}
+
+	});
+}
+
+void ServerManager::UpdateRoomTimer()
+{
+	// 각 플레이어에 시간 send
+	for (auto& roomNum : updateRoomTimerList)
+	{
+		if (roomList.find(roomNum) == roomList.end())
+		{
+			continue;
+		}
+
+		Room& room = roomList[roomNum];
+		room.curPlayTime++;
+
+		// 각 방의 플레이어들에게 타이머 전송
+		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
+		{
+			auto playerInfo = iter->second.first;
+			// TODO : 타이머 패킷 만들어서 전송
+			// TODO : 스폰 패킷 만들어서 전송
+		}
+		/*for (auto& player : room->GetPlayers())
+		{
+			PlayerUnit* user = UserManager::GetInstance().GetUser(player);
+			if (!user)
+				continue;
+
+			Packet::Timer packet(time);
+			user->SendPacket(packet);
+		}*/
+	}
+}
+
 // donghyun : 만약 못찾았을 때는 nullptr 반환
 Player* ServerManager::findPlayerUsingfd(const SOCKET clntfd)
 {

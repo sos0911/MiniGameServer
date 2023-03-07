@@ -6,8 +6,9 @@
 #include "Room.h"
 #include "Player.h"
 #include "Packet.h"
+#include "BaseTaskManager.h"
 
-class ServerManager : public Singleton<ServerManager>
+class ServerManager : public Singleton<ServerManager>, public BaseTaskManager
 {
 private:
 	friend class Singleton;
@@ -21,6 +22,10 @@ private:
 	// donghyun : key는 방 번호이다.
 	std::map<int, Room> roomList;
 	int lastRoomNum = 1;
+	// donghyun : 타이머가 업데이트가 되야 할 방 번호들 (이미 게임 시작한 방들)
+	std::set<int> updateRoomTimerList;
+
+	std::jthread m_timerThread;
 
 public:
 
@@ -52,6 +57,10 @@ public:
 	void quitRoom(const int roomNum, Player* playerPtr);
 	bool addPlayer(Player& player);
 	int getPlayerNum();
+
+	// donghyun : threads methods
+	void RunTimer();
+	void UpdateRoomTimer();
 
 	//// packet generate method
 	//Packet::GameStartPacket& makeGameStartPacket();

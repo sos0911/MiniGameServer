@@ -10,6 +10,7 @@ Room::Room()
 	maxPartCnt = -1;
 	curPartCnt = 0;
 	roomNum = -1;
+	curPlayTime = 0;
 }
 
 Room::Room(const std::string& in_roomName, int in_maxPartCnt, Player& in_player)
@@ -25,4 +26,5 @@ Room::Room(const std::string& in_roomName, int in_maxPartCnt, Player& in_player)
 	// donghyun : 자기 자신
 	curPartCnt = 1;
 	roomNum = ServerManager::getInstance().getLastRoomNum();
+	curPlayTime = 0;
 }
