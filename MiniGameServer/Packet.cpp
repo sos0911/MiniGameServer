@@ -39,23 +39,28 @@ namespace Packet
 		}
 	}
 
+	PlayerInfo::PlayerInfo(const PlayerInfo& in_playerInfo)
+	{
+		// 복사 생성자
+		playerIdx = in_playerInfo.playerIdx;
+		strcpy_s(nickName, PacketProtocol::NICKNAME_MAXSIZE, in_playerInfo.nickName);
+		for (int i = 0; i < 3; ++i)
+		{
+			posVec[i] = in_playerInfo.posVec[i];
+			rotVec[i] = in_playerInfo.rotVec[i];
+		}
+	}
+
 	unsigned short PlayerInfo::getPlayerInfoByteSize()
 	{
 		return sizeof(unsigned short) + PacketProtocol::NICKNAME_MAXSIZE + sizeof(float) * 6;
 	}
 
-	GameStartPacket::GameStartPacket(PlayerInfo* playerInfoArr)
+	GameStartPacket::GameStartPacket(const PlayerInfo& in_playerInfo)
 	{
-		packetSize = sizeof(unsigned short) + sizeof(PacketID);
-		for (int i = 0; i < 5; ++i)
-		{
-			packetSize += PlayerInfo::getPlayerInfoByteSize();
-		}
+		packetSize = sizeof(unsigned short) + sizeof(PacketID) + PlayerInfo::getPlayerInfoByteSize();
 		packetID = PacketID::GAMESTART;
-		for (int i = 0; i < 5; ++i)
-		{
-			playerArr[i] = playerInfoArr[i];
-		}
+		playerInfo = in_playerInfo;
 	}
 
 	// 클라

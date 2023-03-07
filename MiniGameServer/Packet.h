@@ -62,6 +62,8 @@ namespace Packet
 		float rotVec[3];
 		PlayerInfo() {}
 		PlayerInfo(unsigned short in_playerIdx, const char* in_nickName, float* in_posVec, float* in_rotvec);
+		PlayerInfo(const PlayerInfo& in_playerInfo);
+
 		static unsigned short getPlayerInfoByteSize();
 	};
 
@@ -70,8 +72,8 @@ namespace Packet
 	{
 		unsigned short packetSize;
 		PacketID packetID;
-		PlayerInfo playerArr[5];
-		GameStartPacket(PlayerInfo* playerInfoArr);
+		PlayerInfo playerInfo;
+		GameStartPacket(const PlayerInfo& in_playerInfo);
 	};
 
 	struct LoginResultPacket

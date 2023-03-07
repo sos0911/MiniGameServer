@@ -367,24 +367,20 @@ void ServerManager::broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Pack
 	case Packet::PacketID::GAMESTART:
 	{
 		// donghyun : GameStartPacket 패킷 제작
-		Packet::PlayerInfo playerInfoArr[5];
 		int idx = 0;
 		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
 		{
 			// donghyun : 자기 자신도 브로드캐스팅함
 			auto playerPtr = iter->second.first;
 			Packet::PlayerInfo playerInfo(playerPtr->m_infoMapIdx, playerPtr->m_name.c_str(), playerPtr->m_position, playerPtr->m_rotation);
-			playerInfoArr[idx++];
-		}
-
-		Packet::GameStartPacket gameStartPacket(playerInfoArr);
-
-		// donghyun : 모든 클라에게 브로드캐스팅
-		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
-		{
-			// donghyun : 자기 자신도 브로드캐스팅함
-			auto& playerInfo = iter->second;
-			NetworkManager::getInstance().sendPacket(playerInfo.first->m_fd, gameStartPacket, gameStartPacket.packetSize);
+			Packet::GameStartPacket gameStartPacket(playerInfo);
+			// donghyun : 모든 클라에게 브로드캐스팅
+			for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
+			{
+				// donghyun : 자기 자신도 브로드캐스팅함
+				auto& playerInfo = iter->second;
+				NetworkManager::getInstance().sendPacket(playerInfo.first->m_fd, gameStartPacket, gameStartPacket.packetSize);
+			}
 		}
 		break;
 	}
