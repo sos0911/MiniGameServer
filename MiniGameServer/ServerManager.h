@@ -47,7 +47,7 @@ public:
 	int getChatRoomNum(SOCKET clntfd);
 	void broadCastChatInRoom(SOCKET clntfd, int roomNum, std::string& msg);
 	void broadCastInRoom(int roomNum, std::string& msg);
-	void broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Packet::PacketID packetID, void* packet);
+	void broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Packet::PacketID packetID);
 	void quitPlayer(const SOCKET clntfd);
 	void quitRoom(const int roomNum, Player* playerPtr);
 	bool addPlayer(Player& player);

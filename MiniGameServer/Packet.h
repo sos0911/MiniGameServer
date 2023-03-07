@@ -60,7 +60,9 @@ namespace Packet
 		char nickName[PacketProtocol::NICKNAME_MAXSIZE];
 		float posVec[3];
 		float rotVec[3];
-		PlayerInfo(unsigned short in_playerIdx, char* in_nickName, float* in_posVec, float* in_rotvec);
+		PlayerInfo() {}
+		PlayerInfo(unsigned short in_playerIdx, const char* in_nickName, float* in_posVec, float* in_rotvec);
+		static unsigned short getPlayerInfoByteSize();
 	};
 
 	// donghyun : 무조건 5명 모이면 시작이므로, 5명 정보가 들어감
@@ -69,7 +71,7 @@ namespace Packet
 		unsigned short packetSize;
 		PacketID packetID;
 		PlayerInfo playerArr[5];
-		GameStartPacket();
+		GameStartPacket(PlayerInfo* playerInfoArr);
 	};
 
 	struct LoginResultPacket

@@ -86,6 +86,7 @@ void ServerManager::createRoom(const SOCKET clntfd, const std::string& maxCntStr
 		roomList[room.roomNum] = room;
 		// donghyun : 방장에게도 속한 방이 있다고 표시해주기
 		playerPtr->m_roomNum = room.roomNum;
+		playerPtr->m_infoMapIdx = 1;
 
 		std::string msg = std::format("** 대화방이 개설되었습니다.\n\r** {}님이 들어오셨습니다. (현재인원 {} / {})\n\r", playerPtr->m_name, room.curPartCnt, room.maxPartCnt);
 		NetworkManager::getInstance().sendMsg(clntfd, msg);
@@ -251,6 +252,9 @@ void ServerManager::joinRoom(const int roomNum, const SOCKET clntfd)
 
 			msg = std::format("**{}님이 들어오셨습니다. (현재인원 {} / {})\n\r",
 				playerPtr->m_name, room.curPartCnt, room.maxPartCnt);
+
+			playerPtr->m_infoMapIdx = room.curPartCnt;
+
 			broadCastInRoom(room.roomNum, msg);
 		}
 	}
@@ -318,7 +322,7 @@ void ServerManager::broadCastInRoom(int roomNum, std::string& msg)
 	}
 }
 
-void ServerManager::broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Packet::PacketID packetID, void* packet)
+void ServerManager::broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Packet::PacketID packetID)
 {
 	if (roomList.find(roomNum) == roomList.end())
 	{
@@ -331,30 +335,56 @@ void ServerManager::broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Pack
 	{
 	case Packet::PacketID::PLAY:
 	{
-		Packet::PlayPacket playPacket = *(Packet::PlayPacket*)(packet);
-
-		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
+		Player* playerPtr = ServerManager::getInstance().findPlayerUsingfd(clntfd);
+		if (!playerPtr)
 		{
-			auto playerInfo = iter->second.first;
-			// donghyun : 자기 자신에겐 브로드캐스팅 X
-			if (playerInfo->m_fd == clntfd)
-			{
-				continue;
-			}
-			NetworkManager::getInstance().sendPacket(playerInfo->m_fd, playPacket, playPacket.packetSize);
+			return;
 		}
 
-		break;
+		// donghyun : playpacket 제작
+		int playerIdx = playerPtr->m_infoMapIdx;
+		Packet::PlayPacket playPacket(playerPtr->m_infoMapIdx);
+		for (int i = 0; i < 3; i++)
+		{
+			playPacket.posVec[i] = playerPtr->m_position[i];
+			playPacket.rotVec[i] = playerPtr->m_rotation[i];
+
+
+			for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
+			{
+				auto playerInfo = iter->second.first;
+				// donghyun : 자기 자신에겐 브로드캐스팅 X
+				if (playerInfo->m_fd == clntfd)
+				{
+					continue;
+				}
+				NetworkManager::getInstance().sendPacket(playerInfo->m_fd, playPacket, playPacket.packetSize);
+			}
+
+			break;
+		}
 	}
 	case Packet::PacketID::GAMESTART:
 	{
-		Packet::GameStartPacket gameStartPacket = *(Packet::GameStartPacket*)(packet);
+		// donghyun : GameStartPacket 패킷 제작
+		Packet::PlayerInfo playerInfoArr[5];
+		int idx = 0;
+		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
+		{
+			// donghyun : 자기 자신도 브로드캐스팅함
+			auto playerPtr = iter->second.first;
+			Packet::PlayerInfo playerInfo(playerPtr->m_infoMapIdx, playerPtr->m_name.c_str(), playerPtr->m_position, playerPtr->m_rotation);
+			playerInfoArr[idx++];
+		}
+
+		Packet::GameStartPacket gameStartPacket(playerInfoArr);
+
 		// donghyun : 모든 클라에게 브로드캐스팅
 		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
 		{
 			// donghyun : 자기 자신도 브로드캐스팅함
 			auto& playerInfo = iter->second;
-			NetworkManager::getInstance().sendPacket(playerInfo.first->m_fd, packet, gameStartPacket.packetSize);
+			NetworkManager::getInstance().sendPacket(playerInfo.first->m_fd, gameStartPacket, gameStartPacket.packetSize);
 		}
 		break;
 	}

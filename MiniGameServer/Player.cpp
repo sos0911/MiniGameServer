@@ -75,8 +75,7 @@ void Player::decomposePacket(const char* packetChar)
 			// donghyun : 테스트용으로 한 방에 집어 넣음
 			ServerManager::getInstance().joinRoom(2, m_fd);
 			// donghyun : 2명이 찼을 때 게임 시작 패킷 브로드캐스팅
-			
-			ServerManager::getInstance().broadCastPacketInRoom(m_fd, 2, Packet::PacketID::GAMESTART, )
+			ServerManager::getInstance().broadCastPacketInRoom(m_fd, 2, Packet::PacketID::GAMESTART);
 		}
 
 		Packet::LoginResultPacket loginPacket(true);
@@ -121,17 +120,8 @@ void Player::decomposePacket(const char* packetChar)
 		{
 			return;
 		}
-		
-		// donghyun : playpacket 제작
-		int playerIdx = m_infoMapIdx;
-		Packet::PlayPacket playPacket(playerPtr->m_infoMapIdx);
-		for (int i = 0; i < 3; i++)
-		{
-			playPacket.posVec[i] = playerPtr->m_position[i];
-			playPacket.rotVec[i] = playerPtr->m_rotation[i];
-		}
-		ServerManager::getInstance().broadCastPacketInRoom(playerPtr->m_fd, roomNum, Packet::PacketID::PLAY, &playPacket);
-
+	
+		ServerManager::getInstance().broadCastPacketInRoom(playerPtr->m_fd, roomNum, Packet::PacketID::PLAY);
 		break;
 	}
 	default:

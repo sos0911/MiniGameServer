@@ -19,8 +19,8 @@ public:
 	float m_position[3] = { 0.0f };
 	float m_rotation[3] = { 0.0f };
 
-	// donghyun : playerInfo idx
-	int m_infoMapIdx = -1;
+	// donghyun : 각 방에서의 player idx
+	unsigned short m_infoMapIdx = -1;
 
 	//donghyun : 맨 처음 클라 소켓 연결 요청 시 이름이 없을 때 사용하는 생성자
 	Player(char ip[], u_short port, SOCKET fd, std::string name);
