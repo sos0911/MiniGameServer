@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 
 #include "ServerManager.h"
 #include "NetworkManager.h"
@@ -11,7 +11,7 @@ ServerManager::ServerManager()
 
 void ServerManager::login(SOCKET clntfd, std::vector<std::string>& splitStrList)
 {
-	// donghyun : ÀÌ¸§ ÀçÁ¶¸³
+	// donghyun : ì´ë¦„ ì¬ì¡°ë¦½
 	int vecSize = static_cast<int>(splitStrList.size());
 	std::string playerName = "";
 	for (int i = 1; i < vecSize - 1; i++)
@@ -20,38 +20,38 @@ void ServerManager::login(SOCKET clntfd, std::vector<std::string>& splitStrList)
 	}
 	playerName += splitStrList[vecSize - 1];
 
-	// donghyun : ÀÌ¸§ Áßº¹ °Ë»ç
+	// donghyun : ì´ë¦„ ì¤‘ë³µ ê²€ì‚¬
 	if (nullptr == findPlayerUsingName(playerName))
 	{
 		Player* playerPtr = findPlayerUsingfd(clntfd);
 		if (playerPtr)
 		{
 			playerPtr->m_name = playerName;
-			//NetworkManager::getInstance().sendMsg(clntfd, std::format("** ·Î±×ÀÎ ÇÏ¿´½À´Ï´Ù. {}\n\r", playerPtr->m_name));
+			//NetworkManager::getInstance().sendMsg(clntfd, std::format("** ë¡œê·¸ì¸ í•˜ì˜€ìŠµë‹ˆë‹¤. {}\n\r", playerPtr->m_name));
 			showHelp(clntfd);
 		}
 	}
 	else
 	{
-		//NetworkManager::getInstance().sendMsg(clntfd, "ÇØ´ç ÀÌ¸§Àº »ç¿ëÇÒ ¼ö ¾ø½À´Ï´Ù.\n\r");
+		//NetworkManager::getInstance().sendMsg(clntfd, "í•´ë‹¹ ì´ë¦„ì€ ì‚¬ìš©í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.\n\r");
 	}
 }
 
-// donghyun : µµ¿ò¸» È£Ãâ
+// donghyun : ë„ì›€ë§ í˜¸ì¶œ
 void ServerManager::showHelp(const SOCKET clntfd)
 {
 	std::string msg = "";
 	msg.reserve(100);
 	msg = "-------------------------------------------------------------- -\n\r\
-H                         ¸í·É¾î ¾È³»\n\r\
-US                        ÀÌ¿ëÀÚ ¸ñ·Ï º¸±â\n\r\
-LT                        ´ëÈ­¹æ ¸ñ·Ï º¸±â\n\r\
-ST [¹æ¹øÈ£]               ´ëÈ­¹æ Á¤º¸ º¸±â\n\r\
-PF [»ó´ë¹æID]             ÀÌ¿ëÀÚ Á¤º¸ º¸±â\n\r\
-TO [»ó´ë¹æID] [¸Ş½ÃÁö]    ÂÊÁö º¸³»±â\n\r\
-O  [ÃÖ´ëÀÎ¿ø] [¹æÁ¦¸ñ]    ´ëÈ­¹æ ¸¸µé±â\n\r\
-J  [¹æ¹øÈ£]               ´ëÈ­¹æ Âü¿©ÇÏ±â\n\r\
-X                         ³¡³»±â\n\r\
+H                         ëª…ë ¹ì–´ ì•ˆë‚´\n\r\
+US                        ì´ìš©ì ëª©ë¡ ë³´ê¸°\n\r\
+LT                        ëŒ€í™”ë°© ëª©ë¡ ë³´ê¸°\n\r\
+ST [ë°©ë²ˆí˜¸]               ëŒ€í™”ë°© ì •ë³´ ë³´ê¸°\n\r\
+PF [ìƒëŒ€ë°©ID]             ì´ìš©ì ì •ë³´ ë³´ê¸°\n\r\
+TO [ìƒëŒ€ë°©ID] [ë©”ì‹œì§€]    ìª½ì§€ ë³´ë‚´ê¸°\n\r\
+O  [ìµœëŒ€ì¸ì›] [ë°©ì œëª©]    ëŒ€í™”ë°© ë§Œë“¤ê¸°\n\r\
+J  [ë°©ë²ˆí˜¸]               ëŒ€í™”ë°© ì°¸ì—¬í•˜ê¸°\n\r\
+X                         ëë‚´ê¸°\n\r\
 -------------------------------------------------------------- -\n\r";
 
 	//NetworkManager::getInstance().sendMsg(clntfd, msg);
@@ -62,14 +62,14 @@ void ServerManager::showChatHelp(const SOCKET clntfd)
 	std::string msg = "";
 	msg.reserve(100);
 	msg = "-------------------------------------------------------------- -\n\r\
-/H                         ¸í·É¾î ¾È³»\n\r\
-/US                        ÀÌ¿ëÀÚ ¸ñ·Ï º¸±â\n\r\
-/LT                        ´ëÈ­¹æ ¸ñ·Ï º¸±â\n\r\
-/ST [¹æ¹øÈ£]               ´ëÈ­¹æ Á¤º¸ º¸±â\n\r\
-/PF [»ó´ë¹æID]             ÀÌ¿ëÀÚ Á¤º¸ º¸±â\n\r\
-/TO [»ó´ë¹æID] [¸Ş½ÃÁö]    ÂÊÁö º¸³»±â\n\r\
-/Q                         ´ëÈ­¹æ ³ª°¡±â\n\r\
-/X                         ³¡³»±â\n\r\
+/H                         ëª…ë ¹ì–´ ì•ˆë‚´\n\r\
+/US                        ì´ìš©ì ëª©ë¡ ë³´ê¸°\n\r\
+/LT                        ëŒ€í™”ë°© ëª©ë¡ ë³´ê¸°\n\r\
+/ST [ë°©ë²ˆí˜¸]               ëŒ€í™”ë°© ì •ë³´ ë³´ê¸°\n\r\
+/PF [ìƒëŒ€ë°©ID]             ì´ìš©ì ì •ë³´ ë³´ê¸°\n\r\
+/TO [ìƒëŒ€ë°©ID] [ë©”ì‹œì§€]    ìª½ì§€ ë³´ë‚´ê¸°\n\r\
+/Q                         ëŒ€í™”ë°© ë‚˜ê°€ê¸°\n\r\
+/X                         ëë‚´ê¸°\n\r\
 -------------------------------------------------------------- -\n\r";
 
 	//NetworkManager::getInstance().sendMsg(clntfd, msg);
@@ -82,11 +82,11 @@ void ServerManager::createRoom(const SOCKET clntfd, const std::string& maxCntStr
 	{
 		Room room(roomName, std::stoi(maxCntStr), *playerPtr);
 		roomList[room.roomNum] = room;
-		// donghyun : ¹æÀå¿¡°Ôµµ ¼ÓÇÑ ¹æÀÌ ÀÖ´Ù°í Ç¥½ÃÇØÁÖ±â
+		// donghyun : ë°©ì¥ì—ê²Œë„ ì†í•œ ë°©ì´ ìˆë‹¤ê³  í‘œì‹œí•´ì£¼ê¸°
 		playerPtr->m_roomNum = room.roomNum;
 		playerPtr->m_infoMapIdx = 1;
 
-		//std::string msg = std::format("** ´ëÈ­¹æÀÌ °³¼³µÇ¾ú½À´Ï´Ù.\n\r** {}´ÔÀÌ µé¾î¿À¼Ì½À´Ï´Ù. (ÇöÀçÀÎ¿ø {} / {})\n\r", playerPtr->m_name, room.curPartCnt, room.maxPartCnt);
+		//std::string msg = std::format("** ëŒ€í™”ë°©ì´ ê°œì„¤ë˜ì—ˆìŠµë‹ˆë‹¤.\n\r** {}ë‹˜ì´ ë“¤ì–´ì˜¤ì…¨ìŠµë‹ˆë‹¤. (í˜„ì¬ì¸ì› {} / {})\n\r", playerPtr->m_name, room.curPartCnt, room.maxPartCnt);
 		//NetworkManager::getInstance().sendMsg(clntfd, msg);
 	}
 }
@@ -101,12 +101,12 @@ void ServerManager::sendWhisper(std::vector<std::string>& splitStrList, const SO
 	{
 		if (clntfd == sendPlayerPtr->m_fd)
 		{
-			//NetworkManager::getInstance().sendMsg(clntfd, "** ÀÚ±â ÀÚ½Å¿¡°Ô´Â º¸³¾ ¼ö ¾ø½À´Ï´Ù.\n\r");
+			//NetworkManager::getInstance().sendMsg(clntfd, "** ìê¸° ìì‹ ì—ê²ŒëŠ” ë³´ë‚¼ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.\n\r");
 			return;
 		}
 
 		Player& player = playerList[clntfd];
-		msg = std::format("# {}´ÔÀÇ ÂÊÁö ==> ", player.m_name);
+		msg = std::format("# {}ë‹˜ì˜ ìª½ì§€ ==> ", player.m_name);
 		size_t splitStrSize = splitStrList.size();
 		for (size_t i = 2; i < splitStrSize; ++i)
 		{
@@ -115,11 +115,11 @@ void ServerManager::sendWhisper(std::vector<std::string>& splitStrList, const SO
 		msg += "\n\r";
 
 		//NetworkManager::getInstance().sendMsg(sendPlayerPtr->m_fd, msg);
-		//NetworkManager::getInstance().sendMsg(clntfd, "** ÂÊÁö¸¦ º¸³Â½À´Ï´Ù.\n\r");
+		//NetworkManager::getInstance().sendMsg(clntfd, "** ìª½ì§€ë¥¼ ë³´ëƒˆìŠµë‹ˆë‹¤.\n\r");
 	}
 	else
 	{
-		msg = std::format("** {}´ÔÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù.\n\r", splitStrList[1]);
+		msg = std::format("** {}ë‹˜ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.\n\r", splitStrList[1]);
 		//NetworkManager::getInstance().sendMsg(clntfd, msg);
 	}
 }
@@ -131,20 +131,20 @@ void ServerManager::showRoomInfo(int roomNum, const SOCKET clntfd)
 
 	if (roomList.find(roomNum) == roomList.end())
 	{
-		msg = "** Á¸ÀçÇÏÁö ¾Ê´Â ´ëÈ­¹æÀÔ´Ï´Ù.\n\r";
+		msg = "** ì¡´ì¬í•˜ì§€ ì•ŠëŠ” ëŒ€í™”ë°©ì…ë‹ˆë‹¤.\n\r";
 	}
 	else
 	{
 		Room& room = roomList[roomNum];
-		msg = std::format("------------------------- ´ëÈ­¹æ Á¤º¸ -------------------------\n\r\
+		msg = std::format("------------------------- ëŒ€í™”ë°© ì •ë³´ -------------------------\n\r\
 [  {}] ( {}/ {}) {}\n\r\
-   °³¼³½Ã°£:  {}\n\r", room.roomNum, room.curPartCnt, room.maxPartCnt, room.roomName, room.openTime);
+   ê°œì„¤ì‹œê°„:  {}\n\r", room.roomNum, room.curPartCnt, room.maxPartCnt, room.roomName, room.openTime);
 
 		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
 		{
-			// donghyun : ÀÚ±â ÀÚ½Åµµ ºê·ÎµåÄ³½ºÆÃÇÔ
+			// donghyun : ìê¸° ìì‹ ë„ ë¸Œë¡œë“œìºìŠ¤íŒ…í•¨
 			auto& playerInfo = iter->second;
-			msg += std::format("   Âü¿©ÀÚ: {}              Âü¿©½Ã°£:  {}\n\r",
+			msg += std::format("   ì°¸ì—¬ì: {}              ì°¸ì—¬ì‹œê°„:  {}\n\r",
 				playerInfo.first->m_name, playerInfo.second);
 		}
 
@@ -159,7 +159,7 @@ void ServerManager::showRoomList(const SOCKET clntfd)
 	std::string msg = "";
 	msg.reserve(100);
 
-	msg += "------------------------- ´ëÈ­¹æ ¸ñ·Ï -------------------------\n\r";
+	msg += "------------------------- ëŒ€í™”ë°© ëª©ë¡ -------------------------\n\r";
 	for (auto iter = roomList.begin(); iter != roomList.end(); ++iter)
 	{
 		Room& room = iter->second;
@@ -181,20 +181,20 @@ void ServerManager::showPlayerInfo(std::string& playerName, const SOCKET clntfd)
 	Player* playerPtr = findPlayerUsingName(playerName);
 	if (nullptr == playerPtr)
 	{
-		msg = std::format("** {}´ÔÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù.\n\r", playerName);
+		msg = std::format("** {}ë‹˜ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.\n\r", playerName);
 	}
 	else
 	{
 		Player& player = *playerPtr;
 		if (player.m_roomNum > 0)
 		{
-			msg = std::format("** {}´ÔÀº ÇöÀç {}¹ø Ã¤ÆÃ¹æ¿¡ ÀÖ½À´Ï´Ù.\n\r", player.m_name, player.m_roomNum);
+			msg = std::format("** {}ë‹˜ì€ í˜„ì¬ {}ë²ˆ ì±„íŒ…ë°©ì— ìˆìŠµë‹ˆë‹¤.\n\r", player.m_name, player.m_roomNum);
 		}
 		else
 		{
-			msg = std::format("** {}´ÔÀº ÇöÀç ´ë±â½Ç¿¡ ÀÖ½À´Ï´Ù.\n\r", player.m_name);
+			msg = std::format("** {}ë‹˜ì€ í˜„ì¬ ëŒ€ê¸°ì‹¤ì— ìˆìŠµë‹ˆë‹¤.\n\r", player.m_name);
 		}
-		msg += std::format("** Á¢¼ÓÁö: {} : {}\n\r", player.m_ip, player.m_port);
+		msg += std::format("** ì ‘ì†ì§€: {} : {}\n\r", player.m_ip, player.m_port);
 	}
 
 	//NetworkManager::getInstance().sendMsg(clntfd, msg);
@@ -205,11 +205,11 @@ void ServerManager::showPlayerList(const SOCKET clntfd)
 	std::string msg = "";
 	msg.reserve(100);
 
-	msg += "------------------------- ÀÌ¿ëÀÚ ¸ñ·Ï -------------------------\n\r";
+	msg += "------------------------- ì´ìš©ì ëª©ë¡ -------------------------\n\r";
 	for (auto iter = playerList.begin(); iter != playerList.end(); ++iter)
 	{
 		auto player = iter->second;
-		/*std::string playerInfo = std::format("ÀÌ¿ëÀÚ: {}              Á¢¼ÓÁö : {} : {}\n\r", player.m_name, player.m_ip, player.m_port);
+		/*std::string playerInfo = std::format("ì´ìš©ì: {}              ì ‘ì†ì§€ : {} : {}\n\r", player.m_name, player.m_ip, player.m_port);
 		msg += playerInfo;*/
 		msg += player.getInfoStr() + "\n\r";
 	}
@@ -225,7 +225,7 @@ void ServerManager::joinRoom(const int roomNum, const SOCKET clntfd)
 
 	if (roomList.find(roomNum) == roomList.end())
 	{
-		msg = std::format("** {}¹ø ¹æÀº Á¸ÀçÇÏÁö ¾Ê´Â ´ëÈ­¹æÀÔ´Ï´Ù.\n\r", roomNum);
+		msg = std::format("** {}ë²ˆ ë°©ì€ ì¡´ì¬í•˜ì§€ ì•ŠëŠ” ëŒ€í™”ë°©ì…ë‹ˆë‹¤.\n\r", roomNum);
 		//NetworkManager::getInstance().sendMsg(clntfd, msg);
 	}
 	else
@@ -234,21 +234,21 @@ void ServerManager::joinRoom(const int roomNum, const SOCKET clntfd)
 		if (playerPtr)
 		{
 			Room& room = roomList[roomNum];
-			// donghyun : ¸¸¾à ÃÖ´ë ÀÎ¿øº¸´Ù ¸¹¾ÆÁø´Ù¸é ÀÎ¿ø ÃÊ°ú·Î ÀÔÀå ºÒ°¡
+			// donghyun : ë§Œì•½ ìµœëŒ€ ì¸ì›ë³´ë‹¤ ë§ì•„ì§„ë‹¤ë©´ ì¸ì› ì´ˆê³¼ë¡œ ì…ì¥ ë¶ˆê°€
 			if (room.curPartCnt >= room.maxPartCnt)
 			{
-				msg = std::format("** ¹æ ÀÎ¿ø ÃÊ°ú·Î ÀÔÀåÀÌ ºÒ°¡´ÉÇÕ´Ï´Ù. (ÇöÀçÀÎ¿ø {} / {})\n\r",
+				msg = std::format("** ë°© ì¸ì› ì´ˆê³¼ë¡œ ì…ì¥ì´ ë¶ˆê°€ëŠ¥í•©ë‹ˆë‹¤. (í˜„ì¬ì¸ì› {} / {})\n\r",
 					room.curPartCnt, room.maxPartCnt);
 				//NetworkManager::getInstance().sendMsg(clntfd, msg);
 				return;
 			}
-			// donghyun : room¿¡ ÀÚ±â ÀÚ½Å Ãß°¡ (Çö½Ç ½Ã°£µµ)
+			// donghyun : roomì— ìê¸° ìì‹  ì¶”ê°€ (í˜„ì‹¤ ì‹œê°„ë„)
 			room.roomPartInfo[playerPtr->m_name] = { playerPtr, ServerManager::getInstance().getCurTime() };
 			++room.curPartCnt;
 
 			playerPtr->m_roomNum = room.roomNum;
 
-			msg = std::format("**{}´ÔÀÌ µé¾î¿À¼Ì½À´Ï´Ù. (ÇöÀçÀÎ¿ø {} / {})\n\r",
+			msg = std::format("**{}ë‹˜ì´ ë“¤ì–´ì˜¤ì…¨ìŠµë‹ˆë‹¤. (í˜„ì¬ì¸ì› {} / {})\n\r",
 				playerPtr->m_name, room.curPartCnt, room.maxPartCnt);
 
 			playerPtr->m_infoMapIdx = room.curPartCnt;
@@ -265,7 +265,7 @@ int ServerManager::getChatRoomNum(SOCKET clntfd)
 	{
 		return playerPtr->m_roomNum;
 	}
-	// donghyun : ¸øÃ£¾ÒÀ»¶§´Â ¹®Á¦°¡ ÀÖÀ½.
+	// donghyun : ëª»ì°¾ì•˜ì„ë•ŒëŠ” ë¬¸ì œê°€ ìˆìŒ.
 	return -2;
 }
 
@@ -279,7 +279,7 @@ void ServerManager::broadCastChatInRoom(SOCKET clntfd, int roomNum, std::string&
 	{
 		broadMsg = std::format("{} > {}\n\r", playerPtr->m_name, msg);
 
-		// donghyun : ¸¸¾à °³ÀÎÀÌ Ã¤ÆÃÄ¡´ø °Ô ÀÖÀ¸¸é, ±×´ë·Î Å¬¶ó´Ü¿¡ ³ª¿À°Ô ÇÑ´Ù.
+		// donghyun : ë§Œì•½ ê°œì¸ì´ ì±„íŒ…ì¹˜ë˜ ê²Œ ìˆìœ¼ë©´, ê·¸ëŒ€ë¡œ í´ë¼ë‹¨ì— ë‚˜ì˜¤ê²Œ í•œë‹¤.
 		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
 		{
 			Player* iterPtr = iter->second.first;
@@ -314,7 +314,7 @@ void ServerManager::broadCastInRoom(int roomNum, std::string& msg)
 
 	for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
 	{
-		// donghyun : ÀÚ±â ÀÚ½Åµµ ºê·ÎµåÄ³½ºÆÃÇÔ
+		// donghyun : ìê¸° ìì‹ ë„ ë¸Œë¡œë“œìºìŠ¤íŒ…í•¨
 		auto& playerInfo = iter->second;
 		//NetworkManager::getInstance().sendMsg(playerInfo.first->m_fd, msg);
 	}
@@ -339,43 +339,41 @@ void ServerManager::broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Pack
 			return;
 		}
 
-		// donghyun : playpacket Á¦ÀÛ
+		// donghyun : playpacket ì œì‘
 		int playerIdx = playerPtr->m_infoMapIdx;
 		Packet::PlayPacket playPacket(playerPtr->m_infoMapIdx);
 		for (int i = 0; i < 3; i++)
 		{
 			playPacket.posVec[i] = playerPtr->m_position[i];
 			playPacket.rotVec[i] = playerPtr->m_rotation[i];
-
-
-			for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
-			{
-				auto playerInfo = iter->second.first;
-				// donghyun : ÀÚ±â ÀÚ½Å¿¡°Õ ºê·ÎµåÄ³½ºÆÃ X
-				if (playerInfo->m_fd == clntfd)
-				{
-					continue;
-				}
-				NetworkManager::getInstance().sendPacket(playerInfo->m_fd, playPacket, playPacket.packetSize);
-			}
-
-			break;
 		}
+
+		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
+		{
+			auto playerInfo = iter->second.first;
+			// donghyun : ìê¸° ìì‹ ì—ê² ë¸Œë¡œë“œìºìŠ¤íŒ… X
+			if (playerInfo->m_fd == clntfd)
+			{
+				continue;
+			}
+			NetworkManager::getInstance().sendPacket(playerInfo->m_fd, playPacket, playPacket.packetSize);
+		}
+		break;
 	}
 	case Packet::PacketID::GAMESTART:
 	{
-		// donghyun : GameStartPacket ÆĞÅ¶ Á¦ÀÛ
+		// donghyun : GameStartPacket íŒ¨í‚· ì œì‘
 		int idx = 0;
 		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
 		{
-			// donghyun : ÀÚ±â ÀÚ½Åµµ ºê·ÎµåÄ³½ºÆÃÇÔ
+			// donghyun : ìê¸° ìì‹ ë„ ë¸Œë¡œë“œìºìŠ¤íŒ…í•¨
 			auto playerPtr = iter->second.first;
 			Packet::PlayerInfo playerInfo(playerPtr->m_infoMapIdx, playerPtr->m_name.c_str(), playerPtr->m_position, playerPtr->m_rotation);
 			Packet::GameStartPacket gameStartPacket(playerInfo);
-			// donghyun : ¸ğµç Å¬¶ó¿¡°Ô ºê·ÎµåÄ³½ºÆÃ
+			// donghyun : ëª¨ë“  í´ë¼ì—ê²Œ ë¸Œë¡œë“œìºìŠ¤íŒ…
 			for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
 			{
-				// donghyun : ÀÚ±â ÀÚ½Åµµ ºê·ÎµåÄ³½ºÆÃÇÔ
+				// donghyun : ìê¸° ìì‹ ë„ ë¸Œë¡œë“œìºìŠ¤íŒ…í•¨
 				auto& playerInfo = iter->second;
 				NetworkManager::getInstance().sendPacket(playerInfo.first->m_fd, gameStartPacket, gameStartPacket.packetSize);
 			}
@@ -402,7 +400,7 @@ void ServerManager::quitPlayer(const SOCKET clntfd)
 		{
 			quitRoom(playerPtr->m_roomNum, playerPtr);
 		}
-		// donghyun : ÇÃ·¹ÀÌ¾î set¿¡¼­µµ »©±â
+		// donghyun : í”Œë ˆì´ì–´ setì—ì„œë„ ë¹¼ê¸°
 		playerList.erase(playerPtr->m_fd);
 	}
 	NetworkManager::getInstance().closeClient(clntfd);
@@ -418,19 +416,19 @@ void ServerManager::quitRoom(const int roomNum, Player* playerPtr)
 
 	std::string msg = "";
 	msg.reserve(100);
-	msg = std::format("**{}´ÔÀÌ ³ª°¡¼Ì½À´Ï´Ù. (ÇöÀçÀÎ¿ø {} / {})\n\r",
+	msg = std::format("**{}ë‹˜ì´ ë‚˜ê°€ì…¨ìŠµë‹ˆë‹¤. (í˜„ì¬ì¸ì› {} / {})\n\r",
 		playerPtr->m_name, room.curPartCnt, room.maxPartCnt);
 	broadCastInRoom(room.roomNum, msg);
-	//NetworkManager::getInstance().sendMsg(playerPtr->m_fd, "**Ã¤ÆÃ¹æ¿¡¼­ ³ª¿Ô½À´Ï´Ù.\n\r");
+	//NetworkManager::getInstance().sendMsg(playerPtr->m_fd, "**ì±„íŒ…ë°©ì—ì„œ ë‚˜ì™”ìŠµë‹ˆë‹¤.\n\r");
 
-	// donghyun : ÇöÀç ÀÎ¿øÀÌ 0¸í ÀÌÇÏ¸é ¹æ ÆøÆÄ
+	// donghyun : í˜„ì¬ ì¸ì›ì´ 0ëª… ì´í•˜ë©´ ë°© í­íŒŒ
 	if (room.curPartCnt <= 0)
 	{
 		roomList.erase(room.roomNum);
 	}
 }
 
-// donghyun : Ã¹ Å¬¶ó ¼ÒÄÏ ¿¬°á ¿äÃ» ½Ã¿¡ »ç¿ëµÊ
+// donghyun : ì²« í´ë¼ ì†Œì¼“ ì—°ê²° ìš”ì²­ ì‹œì— ì‚¬ìš©ë¨
 bool ServerManager::addPlayer(Player& player)
 {
 	return playerList.insert({ player.m_fd, player }).second;
@@ -443,14 +441,14 @@ int ServerManager::getPlayerNum()
 
 void ServerManager::RunTimer()
 {
-	//Å¸ÀÌ¸Ó ¸¸µé±â
+	//íƒ€ì´ë¨¸ ë§Œë“¤ê¸°
 	m_timerThread = static_cast<std::jthread>
 		([this](std::stop_token stoken)
 	{
 		while (!stoken.stop_requested())
 		{
 			UpdateRoomTimer();
-			// 1ÃÊ¸¶´Ù ÀÛµ¿ÇÏ´Â Å¸ÀÌ¸Ó
+			// 1ì´ˆë§ˆë‹¤ ì‘ë™í•˜ëŠ” íƒ€ì´ë¨¸
 			std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(1000));
 		}
 
@@ -459,7 +457,7 @@ void ServerManager::RunTimer()
 
 void ServerManager::UpdateRoomTimer()
 {
-	// °¢ ÇÃ·¹ÀÌ¾î¿¡ ½Ã°£ send
+	// ê° í”Œë ˆì´ì–´ì— ì‹œê°„ send
 	for (auto& roomNum : updateRoomTimerList)
 	{
 		if (roomList.find(roomNum) == roomList.end())
@@ -470,12 +468,12 @@ void ServerManager::UpdateRoomTimer()
 		Room& room = roomList[roomNum];
 		room.curPlayTime++;
 
-		// °¢ ¹æÀÇ ÇÃ·¹ÀÌ¾îµé¿¡°Ô Å¸ÀÌ¸Ó Àü¼Û
+		// ê° ë°©ì˜ í”Œë ˆì´ì–´ë“¤ì—ê²Œ íƒ€ì´ë¨¸ ì „ì†¡
 		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
 		{
 			auto playerInfo = iter->second.first;
-			// TODO : Å¸ÀÌ¸Ó ÆĞÅ¶ ¸¸µé¾î¼­ Àü¼Û
-			// TODO : ½ºÆù ÆĞÅ¶ ¸¸µé¾î¼­ Àü¼Û
+			// TODO : íƒ€ì´ë¨¸ íŒ¨í‚· ë§Œë“¤ì–´ì„œ ì „ì†¡
+			// TODO : ìŠ¤í° íŒ¨í‚· ë§Œë“¤ì–´ì„œ ì „ì†¡
 		}
 		/*for (auto& player : room->GetPlayers())
 		{
@@ -489,13 +487,13 @@ void ServerManager::UpdateRoomTimer()
 	}
 }
 
-// donghyun : ¸¸¾à ¸øÃ£¾ÒÀ» ¶§´Â nullptr ¹İÈ¯
+// donghyun : ë§Œì•½ ëª»ì°¾ì•˜ì„ ë•ŒëŠ” nullptr ë°˜í™˜
 Player* ServerManager::findPlayerUsingfd(const SOCKET clntfd)
 {
 	return (playerList.find(clntfd) == playerList.end() ? nullptr : &(playerList[clntfd]));
 }
 
-// donghyun : ¸¸¾à ¸øÃ£¾ÒÀ» ¶§´Â nullptr ¹İÈ¯
+// donghyun : ë§Œì•½ ëª»ì°¾ì•˜ì„ ë•ŒëŠ” nullptr ë°˜í™˜
 Player* ServerManager::findPlayerUsingName(const std::string& playerName)
 {
 	Player* playerPtr = nullptr;
@@ -512,7 +510,7 @@ Player* ServerManager::findPlayerUsingName(const std::string& playerName)
 
 std::string ServerManager::getCurTime()
 {
-	// donghyun : HH:MM:SS Çü½ÄÀ¸·Î ±¸ÇÏ´Â ÇÔ¼ö
+	// donghyun : HH:MM:SS í˜•ì‹ìœ¼ë¡œ êµ¬í•˜ëŠ” í•¨ìˆ˜
 	auto now = std::chrono::system_clock::now();
 	std::time_t current_time = std::chrono::system_clock::to_time_t(now);
 	std::tm local_time{};
