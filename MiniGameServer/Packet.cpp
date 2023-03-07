@@ -31,7 +31,8 @@ namespace Packet
 	{
 		nickName[0] = { 0, };
 		playerIdx = in_playerIdx;
-		memcpy_s(&playerIdx, PacketProtocol::NICKNAME_MAXSIZE, in_nickName, strlen(in_nickName));
+		//memcpy_s(&playerIdx, PacketProtocol::NICKNAME_MAXSIZE, in_nickName, strlen(in_nickName));
+		strcpy_s(nickName, PacketProtocol::NICKNAME_MAXSIZE, in_nickName);
 		for (int i = 0; i < 3; ++i)
 		{
 			posVec[i] = in_posVec[i];
