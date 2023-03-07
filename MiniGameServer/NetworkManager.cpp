@@ -73,9 +73,6 @@ void NetworkManager::execute()
 			continue;
 		}
 
-		// donghyun : 일단 테스트용으로 방 하나 생성
-		ServerManager::getInstance().createRoom(m_fd, "5", "test");
-
 		for (u_int i = 0; i < reads.fd_count; ++i)
 		{
 			if (!FD_ISSET(reads.fd_array[i], &cpyReads))
