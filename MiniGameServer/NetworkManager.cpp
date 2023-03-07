@@ -73,6 +73,9 @@ void NetworkManager::execute()
 			continue;
 		}
 
+		// donghyun : servermanager 타이머 쓰레드 실행
+		ServerManager::getInstance().RunTimer();
+
 		for (u_int i = 0; i < reads.fd_count; ++i)
 		{
 			if (!FD_ISSET(reads.fd_array[i], &cpyReads))

@@ -57,6 +57,7 @@ public:
 	void quitRoom(const int roomNum, Player* playerPtr);
 	bool addPlayer(Player& player);
 	int getPlayerNum();
+	void addRoomTimerList(const int roomNum);
 
 	// donghyun : threads methods
 	void RunTimer();

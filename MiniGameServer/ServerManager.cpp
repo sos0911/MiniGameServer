@@ -4,6 +4,7 @@
 #include "NetworkManager.h"
 #include <iostream>
 #include <format>
+#include <ctime>
 
 ServerManager::ServerManager()
 {
@@ -439,6 +440,15 @@ int ServerManager::getPlayerNum()
 	return playerList.size();
 }
 
+void ServerManager::addRoomTimerList(const int roomNum)
+{
+	if (updateRoomTimerList.find(roomNum) != updateRoomTimerList.end())
+	{
+		return;
+	}
+	updateRoomTimerList.insert(roomNum);
+}
+
 void ServerManager::RunTimer()
 {
 	//타이머 만들기
@@ -447,11 +457,10 @@ void ServerManager::RunTimer()
 	{
 		while (!stoken.stop_requested())
 		{
+			// 특정 구간마다 깨어나서 해당 메소드 실행
 			UpdateRoomTimer();
-			// 1초마다 작동하는 타이머
-			std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(1000));
+			std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(ServerProtocol::TIMER_UPDATE_PERIOD));
 		}
-
 	});
 }
 
@@ -471,19 +480,25 @@ void ServerManager::UpdateRoomTimer()
 		// 각 방의 플레이어들에게 타이머 전송
 		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
 		{
-			auto playerInfo = iter->second.first;
-			// TODO : 타이머 패킷 만들어서 전송
-			// TODO : 스폰 패킷 만들어서 전송
-		}
-		/*for (auto& player : room->GetPlayers())
-		{
-			PlayerUnit* user = UserManager::GetInstance().GetUser(player);
-			if (!user)
-				continue;
+			auto playerPtr = iter->second.first;
+			// donghyun : 타이머 패킷 만들어서 전송
+			Packet::TimerPacket timerPacket(room.curPlayTime);
+			NetworkManager::getInstance().sendPacket(playerPtr->m_fd, timerPacket, timerPacket.packetSize);
 
-			Packet::Timer packet(time);
-			user->SendPacket(packet);
-		}*/
+			// donghyun : 스폰 패킷 만들어서 전송 (방향, idx 등은 모두 랜덤)
+			srand(time(NULL)); // 시드(seed) 값을 현재 시간으로 설정
+			int rand_num = -1;
+
+			rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
+			bool IsHorizontal = rand_num % 2 == 0 ? true : false;
+			rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
+			unsigned short lineIdx = rand_num % ServerProtocol::GAMEMAP_SIZE + 1;
+			rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
+			bool directionFlag = rand_num % 2 == 0 ? true : false;
+
+			Packet::SpawnPacket spawnPacket(IsHorizontal, lineIdx, directionFlag);
+			NetworkManager::getInstance().sendPacket(playerPtr->m_fd, spawnPacket, spawnPacket.packetSize);
+		}
 	}
 }
 

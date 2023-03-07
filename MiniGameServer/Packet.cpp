@@ -64,8 +64,22 @@ namespace Packet
 		playerInfo = in_playerInfo;
 	}
 
-	// 클라
+	TimerPacket::TimerPacket(unsigned short in_timeSecond)
+	{
+		packetSize = sizeof(unsigned short) + sizeof(PacketID) + sizeof(unsigned short);
+		packetID = PacketID::TIMER;
+		timeSecond = in_timeSecond;
+	}
 
+	SpawnPacket::SpawnPacket(bool in_IsHorizontal, unsigned short in_lineIdx, bool in_directionFlag) : IsHorizontal(in_IsHorizontal), lineIdx(in_lineIdx), directionFlag(in_directionFlag)
+	{
+		packetSize = sizeof(unsigned short) + sizeof(PacketID) + sizeof(bool) + sizeof(unsigned short) + sizeof(bool);
+		packetID = PacketID::SPAWN;
+	}
+
+	//////////
+	// 클라 //
+	//////////
 	//LoginRequestPacket::LoginRequestPacket(const FString& nickname)
 	//{
 	//	packetSize = sizeof(unsigned short) + sizeof(PacketID) + PacketProtocol::NICKNAME_MAXSIZE;

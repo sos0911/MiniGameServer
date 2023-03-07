@@ -12,6 +12,8 @@ namespace ServerProtocol
 	// donghyun : ms 단위
 	constexpr unsigned int TIMER_UPDATE_PERIOD = 1000;
 	constexpr unsigned int TASK_UPDATE_PERIOD = 50;
+	constexpr unsigned int RANDNUM_SEEDRANGE = 1000;
+	constexpr unsigned int GAMEMAP_SIZE = 7;
 }
 #pragma pack(push,1)
 namespace Packet
@@ -20,12 +22,12 @@ namespace Packet
 	{
 		// server -> client
 		PLAY,
-		SKILL,
 		SPAWN,
 		GAMESTART,
 		LOGINRESULT,
 		MAKEROOMRESULT,
 		JOINROOMRESULT,
+		TIMER,
 		// client -> server
 		UPDATE,
 		LOGINREQUEST,
@@ -56,6 +58,19 @@ namespace Packet
 		PlayPacket(int InfoMapIdx);
 	};
 
+	struct SpawnPacket
+	{
+		unsigned short packetSize;
+		PacketID packetID;
+		// donghyun : true면 수평 방향, 아니면 수직 방향
+		bool IsHorizontal;
+		// donghyun : row, col 둘 중 하나, 모두 1~7
+		unsigned short lineIdx;
+		// donghyun : true면 왼쪽(수평) or 위쪽(수직), False면 오른쪽(수평) or 아래쪽(수직)
+		bool directionFlag;
+		SpawnPacket(bool in_IsHorizontal, unsigned short in_lineIdx, bool in_directionFlag);
+	};
+
 	// donghyun : GameStartPacket 내에 포함되는 개별 플레이어 정보 구조체
 	struct PlayerInfo
 	{
@@ -70,7 +85,7 @@ namespace Packet
 		static unsigned short getPlayerInfoByteSize();
 	};
 
-	// donghyun : 무조건 5명 모이면 시작이므로, 5명 정보가 들어감
+	// donghyun : 게임 시작 전 각 플레이어의 정보를 알려주는 패킷
 	struct GameStartPacket
 	{
 		unsigned short packetSize;
@@ -92,6 +107,7 @@ namespace Packet
 		unsigned short packetSize;
 		PacketID packetID;
 		char roomName[ServerProtocol::ROOMNAME_MAXSIZE];
+		// TODO : 생성자 구현
 		//MakeRoomResultPacket();
 	};
 
@@ -102,8 +118,18 @@ namespace Packet
 		bool JoinRoomSuccess;
 		JoinRoomResultPacket(bool In_JoinRoomSuccess);
 	};
-
-	// client -> server
+	
+	struct TimerPacket
+	{
+		int packetSize;
+		PacketID packetID;
+		unsigned short timeSecond;
+		TimerPacket(unsigned short in_timeSecond);
+	};
+	
+	/////////////////////
+	// client -> server//
+	/////////////////////
 	struct UpdatePacket
 	{
 		unsigned short packetSize;

@@ -74,6 +74,8 @@ void Player::decomposePacket(const char* packetChar)
 		{
 			// donghyun : 테스트용으로 한 방에 집어 넣음
 			ServerManager::getInstance().joinRoom(2, m_fd);
+			// donghyun : 해당 방을 일정 주기마다 타이머 증가시키는 방 리스트에 추가
+			ServerManager::getInstance().addRoomTimerList(2);
 			// donghyun : 2명이 찼을 때 게임 시작 패킷 브로드캐스팅
 			ServerManager::getInstance().broadCastPacketInRoom(m_fd, 2, Packet::PacketID::GAMESTART);
 		}
