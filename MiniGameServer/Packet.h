@@ -14,6 +14,12 @@ namespace ServerProtocol
 	constexpr unsigned int TASK_UPDATE_PERIOD = 50;
 	constexpr unsigned int RANDNUM_SEEDRANGE = 1000;
 	constexpr unsigned int GAMEMAP_SIZE = 7;
+	// donghyun : 0번째 position 정보는 사용X
+	constexpr float PLAYER_INITPOS[5][3] = { {100.0f, -100.0f, 140.0f},
+										   {100.0f, 100.0f, 140.0f},
+										   {-100.0f, -100.0f, 140.0f},
+										   {-100.0f, 100.0f, 140.0f},
+										   {0.0f, 0.0f, 140.0f} };
 }
 #pragma pack(push,1)
 namespace Packet
@@ -55,7 +61,7 @@ namespace Packet
 		unsigned short playerIdx;
 		float posVec[3];
 		float rotVec[3];
-		PlayPacket(int InfoMapIdx);
+		PlayPacket(unsigned short InfoMapIdx);
 	};
 
 	struct SpawnPacket
@@ -79,7 +85,7 @@ namespace Packet
 		float posVec[3];
 		float rotVec[3];
 		PlayerInfo() {}
-		PlayerInfo(unsigned short in_playerIdx, const char* in_nickName, float* in_posVec, float* in_rotvec);
+		PlayerInfo(unsigned short in_playerIdx, const char* in_nickName, const float* in_posVec, const float* in_rotvec);
 		PlayerInfo(const PlayerInfo& in_playerInfo);
 
 		static unsigned short getPlayerInfoByteSize();
@@ -113,7 +119,7 @@ namespace Packet
 
 	struct JoinRoomResultPacket
 	{
-		int packetSize;
+		unsigned short packetSize;
 		PacketID packetID;
 		bool JoinRoomSuccess;
 		JoinRoomResultPacket(bool In_JoinRoomSuccess);
@@ -121,7 +127,7 @@ namespace Packet
 	
 	struct TimerPacket
 	{
-		int packetSize;
+		unsigned short packetSize;
 		PacketID packetID;
 		unsigned short timeSecond;
 		TimerPacket(unsigned short in_timeSecond);
@@ -156,7 +162,7 @@ namespace Packet
 
 	struct JoinRoomRequestPacket
 	{
-		int packetSize;
+		unsigned short packetSize;
 		PacketID packetID;
 		unsigned short RoomNum;
 	};

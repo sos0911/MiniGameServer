@@ -18,7 +18,7 @@ namespace Packet
 		JoinRoomSuccess = In_JoinRoomSuccess;
 	}
 
-	PlayPacket::PlayPacket(int InfoMapIdx)
+	PlayPacket::PlayPacket(unsigned short InfoMapIdx)
 	{
 		packetSize = sizeof(unsigned short) + sizeof(PacketID) + sizeof(unsigned short) + (sizeof(float) * 6);
 		packetID = PacketID::PLAY;
@@ -27,7 +27,7 @@ namespace Packet
 		rotVec[0] = { 0.0f,};
 	}
 
-	PlayerInfo::PlayerInfo(unsigned short in_playerIdx, const char* in_nickName, float* in_posVec, float* in_rotvec)
+	PlayerInfo::PlayerInfo(unsigned short in_playerIdx, const char* in_nickName, const float* in_posVec, const float* in_rotvec)
 	{
 		nickName[0] = { 0, };
 		playerIdx = in_playerIdx;
