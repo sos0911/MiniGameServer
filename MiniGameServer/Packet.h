@@ -20,6 +20,7 @@ namespace ServerProtocol
 										   {-100.0f, -100.0f, 140.0f},
 										   {-100.0f, 100.0f, 140.0f},
 										   {0.0f, 0.0f, 140.0f} };
+	constexpr float PLAYER_COLLIDER_RADIUS = 75.0f;
 }
 #pragma pack(push,1)
 namespace Packet
@@ -186,7 +187,7 @@ namespace Packet
 		unsigned short RoomNum;
 	};
 
-	struct PMColliderRequest
+	struct PMColliderRequestPacket
 	{
 		unsigned short packetSize;
 		PacketID packetID;

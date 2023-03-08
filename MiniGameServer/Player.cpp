@@ -126,10 +126,40 @@ void Player::decomposePacket(const char* packetChar)
 		ServerManager::getInstance().broadCastPacketInRoom(playerPtr->m_fd, roomNum, Packet::PacketID::PLAY);
 		break;
 	}
+	case Packet::PacketID::PMCOLLIDEREQUEST:
+	{
+		Packet::PMColliderRequestPacket pmColliderRequestPacket = *(Packet::PMColliderRequestPacket*)(packetChar);
+
+		float dirVec[3] = { 0.0f, 0.0f, 0.0f };
+		bool IsCollided = checkCollide(pmColliderRequestPacket.monsterPos);
+		if (IsCollided)
+		{
+			// donghyun : 힘 받을 direction vector 계산
+			for (int i = 0; i < 3; ++i)
+			{
+				dirVec[i] = m_position[i] - pmColliderRequestPacket.monsterPos[i];
+			}
+		}
+
+		Packet::PMCollideResultPacket pmCollideResultPacket(IsCollided, dirVec);
+		NetworkManager::getInstance().sendPacket(m_fd, pmCollideResultPacket, pmCollideResultPacket.packetSize);
+		break;
+	}
 	default:
 	{
 		break;
 	}
 	}
+}
+
+// donghyun : true면 충돌
+bool Player::checkCollide(const float* oppoVec)
+{
+	float sqaureDist = 0.0f;
+	for (int i = 0; i < 3; ++i)
+	{
+		sqaureDist += pow(m_position[i] - oppoVec[i], 2);
+	}
+	return pow((ServerProtocol::PLAYER_COLLIDER_RADIUS * 2.0f), 2) >= sqaureDist;
 }
 

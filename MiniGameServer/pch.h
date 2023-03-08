@@ -7,3 +7,6 @@
 
 // donghyun : socket library
 #include <WinSock2.h>
+
+// donghyun : math library
+#include <math.h>
