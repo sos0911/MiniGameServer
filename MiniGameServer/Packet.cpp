@@ -71,10 +71,13 @@ namespace Packet
 		timeSecond = in_timeSecond;
 	}
 
-	SpawnPacket::SpawnPacket(bool in_IsHorizontal, unsigned short in_lineIdx, bool in_directionFlag) : IsHorizontal(in_IsHorizontal), lineIdx(in_lineIdx), directionFlag(in_directionFlag)
+	SpawnPacket::SpawnPacket(bool in_IsHorizontal, unsigned short in_lineIdx, bool in_directionFlag)
 	{
-		packetSize = sizeof(unsigned short) + sizeof(PacketID) + sizeof(bool) + sizeof(unsigned short) + sizeof(bool);
+		packetSize = sizeof(unsigned short) + sizeof(PacketID) + (sizeof(unsigned short) * 3);
 		packetID = PacketID::SPAWN;
+		rowIdx = in_IsHorizontal ? in_lineIdx : 0;
+		colIdx = in_IsHorizontal ? 0 : in_lineIdx;
+		directionIdx = in_directionFlag ? 0 : 1;
 	}
 
 	//////////

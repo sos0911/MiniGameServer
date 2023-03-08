@@ -62,12 +62,12 @@ namespace Packet
 	{
 		unsigned short packetSize;
 		PacketID packetID;
-		// donghyun : true면 수평 방향, 아니면 수직 방향
-		bool IsHorizontal;
-		// donghyun : row, col 둘 중 하나, 모두 1~7
-		unsigned short lineIdx;
+		// donghyun : row idx, 모두 1~7
+		unsigned short rowIdx;
+		// donghyun : col idx, 모두 1~7
+		unsigned short colIdx;
 		// donghyun : true면 왼쪽(수평) or 위쪽(수직), False면 오른쪽(수평) or 아래쪽(수직)
-		bool directionFlag;
+		unsigned short directionIdx;
 		SpawnPacket(bool in_IsHorizontal, unsigned short in_lineIdx, bool in_directionFlag);
 	};
 
