@@ -138,19 +138,14 @@ namespace Packet
 		TimerPacket(unsigned short in_timeSecond);
 	};
 
-	struct PMCollideResultPacket
+	// donghyun : 플-플, 플-투 모두에 대한 충돌 결과 패킷
+	struct CollideResultPacket
 	{
 		unsigned short packetSize;
 		PacketID packetID;
 		bool IsCollided;
 		float forceDir[3];
-		PMCollideResultPacket(const bool in_IsCollided, const float* in_forceDir);
-	};
-
-	struct PPCollideResultPacket
-	{
-		unsigned short packetSize;
-		PacketID packetID;
+		CollideResultPacket(const bool in_IsCollided, const float* in_forceDir);
 	};
 	
 	/////////////////////
@@ -192,6 +187,13 @@ namespace Packet
 		unsigned short packetSize;
 		PacketID packetID;
 		float monsterPos[3];
+	};
+
+	struct PPColliderRequestPacket
+	{
+		unsigned short packetSize;
+		PacketID packetID;
+		unsigned short oppoPlayerIdx;
 	};
 }
 #pragma pack(pop)

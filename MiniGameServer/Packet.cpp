@@ -80,7 +80,7 @@ namespace Packet
 		directionIdx = in_directionFlag ? 0 : 1;
 	}
 
-	PMCollideResultPacket::PMCollideResultPacket(const bool in_IsCollided, const float* in_forceDir)
+	CollideResultPacket::CollideResultPacket(const bool in_IsCollided, const float* in_forceDir)
 	{
 		packetSize = sizeof(unsigned short) + sizeof(PacketID) + sizeof(bool) + (sizeof(float) * 3);
 		packetID = PacketID::PMCOLLIDERESULT;

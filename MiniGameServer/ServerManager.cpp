@@ -524,6 +524,20 @@ Player* ServerManager::findPlayerUsingName(const std::string& playerName)
 	return playerPtr;
 }
 
+Player* ServerManager::findPlayerUsingInfoMapIdx(const unsigned short infoMapIdx)
+{
+	Player* playerPtr = nullptr;
+	for (auto iter = playerList.begin(); iter != playerList.end(); ++iter)
+	{
+		if (iter->second.m_infoMapIdx == infoMapIdx)
+		{
+			playerPtr = &(iter->second);
+			break;
+		}
+	}
+	return playerPtr;
+}
+
 std::string ServerManager::getCurTime()
 {
 	// donghyun : HH:MM:SS 형식으로 구하는 함수

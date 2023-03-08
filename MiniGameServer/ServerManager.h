@@ -68,7 +68,7 @@ public:
 
 	Player* findPlayerUsingfd(const SOCKET clntfd);
 	Player* findPlayerUsingName(const std::string& playerName);
-
+	Player* findPlayerUsingInfoMapIdx(const unsigned short infoMapIdx);
 
 	std::string getCurTime();
 };

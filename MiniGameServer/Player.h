@@ -29,5 +29,5 @@ public:
 	Player(const Player& player);
 	std::string getInfoStr();
 	void decomposePacket(const char* assmeblePacket);
-	bool checkCollide(const float* oppoVec);
+	bool checkCollide(const float* oppoPosVec);
 };

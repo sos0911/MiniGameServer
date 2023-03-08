@@ -141,8 +141,43 @@ void Player::decomposePacket(const char* packetChar)
 			}
 		}
 
-		Packet::PMCollideResultPacket pmCollideResultPacket(IsCollided, dirVec);
-		NetworkManager::getInstance().sendPacket(m_fd, pmCollideResultPacket, pmCollideResultPacket.packetSize);
+		Packet::CollideResultPacket collideResultPacket(IsCollided, dirVec);
+		NetworkManager::getInstance().sendPacket(m_fd, collideResultPacket, collideResultPacket.packetSize);
+		break;
+	}
+	case Packet::PacketID::PPCOLLIDEREQUEST:
+	{
+		Packet::PPColliderRequestPacket ppColliderRequestPacket = *(Packet::PPColliderRequestPacket*)(packetChar);
+
+		float dirVec[3] = { 0.0f, 0.0f, 0.0f };
+
+		Player* oppoPlayer = ServerManager::getInstance().findPlayerUsingInfoMapIdx(ppColliderRequestPacket.oppoPlayerIdx);
+		if (!oppoPlayer)
+		{
+			return;
+		}
+
+		bool IsCollided = checkCollide(oppoPlayer->m_position);
+		if (IsCollided)
+		{
+			// donghyun : 힘 받을 direction vector 계산
+			for (int i = 0; i < 3; ++i)
+			{
+				dirVec[i] = m_position[i] - oppoPlayer->m_position[i];
+			}
+		}
+
+		Packet::CollideResultPacket pCollideResultPacket(IsCollided, dirVec);
+		NetworkManager::getInstance().sendPacket(m_fd, pCollideResultPacket, pCollideResultPacket.packetSize);
+
+		for (int i = 0; i < 3; ++i)
+		{
+			dirVec[i] = -dirVec[i];
+		}
+
+		Packet::CollideResultPacket oCollideResultPacket(IsCollided, dirVec);
+		NetworkManager::getInstance().sendPacket(oppoPlayer->m_fd, oCollideResultPacket, oCollideResultPacket.packetSize);
+
 		break;
 	}
 	default:
@@ -153,12 +188,12 @@ void Player::decomposePacket(const char* packetChar)
 }
 
 // donghyun : true면 충돌
-bool Player::checkCollide(const float* oppoVec)
+bool Player::checkCollide(const float* oppoPosVec)
 {
 	float sqaureDist = 0.0f;
 	for (int i = 0; i < 3; ++i)
 	{
-		sqaureDist += pow(m_position[i] - oppoVec[i], 2);
+		sqaureDist += pow(m_position[i] - oppoPosVec[i], 2);
 	}
 	return pow((ServerProtocol::PLAYER_COLLIDER_RADIUS * 2.0f), 2) >= sqaureDist;
 }
