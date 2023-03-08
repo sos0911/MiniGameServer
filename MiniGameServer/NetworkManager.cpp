@@ -36,6 +36,15 @@ void NetworkManager::execute()
 	{
 		ErrorHandling("socket() error");
 	}
+
+	// donghyun : nagle off
+	int socketOption = 1;
+	int returnValue = setsockopt(hServsock, SOL_SOCKET, TCP_NODELAY, reinterpret_cast<const char*>(&socketOption), sizeof(socketOption));
+	if (returnValue != 0)
+	{
+		return;
+	}
+
 	memset(&servAdr, 0, sizeof(servAdr));
 	servAdr.sin_family = AF_INET;
 	servAdr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -58,6 +67,9 @@ void NetworkManager::execute()
 
 	fd_set cpyReads;
 
+	// donghyun : servermanager 타이머 쓰레드 실행
+	ServerManager::getInstance().RunTimer();
+
 	while (1)
 	{
 		cpyReads = reads;
@@ -73,9 +85,6 @@ void NetworkManager::execute()
 			continue;
 		}
 
-		// donghyun : servermanager 타이머 쓰레드 실행
-		ServerManager::getInstance().RunTimer();
-
 		for (u_int i = 0; i < reads.fd_count; ++i)
 		{
 			if (!FD_ISSET(reads.fd_array[i], &cpyReads))
@@ -87,6 +96,14 @@ void NetworkManager::execute()
 			{
 				adrSize = sizeof(clntAdr);
 				hClntSock = accept(hServsock, (SOCKADDR*)&clntAdr, &adrSize);
+
+				// donghyun : nagle algorithm off
+				int socketOption = 1;
+				int returnValue = setsockopt(hClntSock, SOL_SOCKET, TCP_NODELAY, reinterpret_cast<const char*>(&socketOption), sizeof(socketOption));
+				if (returnValue != 0)
+				{
+					return;
+				}
 
 				FD_SET(hClntSock, &reads);
 

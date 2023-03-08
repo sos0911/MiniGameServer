@@ -34,11 +34,15 @@ namespace Packet
 		MAKEROOMRESULT,
 		JOINROOMRESULT,
 		TIMER,
+		PMCOLLIDERESULT,
+		PPCOLLIDERESULT,
 		// client -> server
 		UPDATE,
 		LOGINREQUEST,
 		MAKEROOMREQUEST,
 		JOINROOMREQUEST,
+		PMCOLLIDEREQUEST,
+		PPCOLLIDEREQUEST,
 	};
 
 	enum class LoginPacketID : unsigned char
@@ -132,6 +136,21 @@ namespace Packet
 		unsigned short timeSecond;
 		TimerPacket(unsigned short in_timeSecond);
 	};
+
+	struct PMCollideResultPacket
+	{
+		unsigned short packetSize;
+		PacketID packetID;
+		bool IsCollided;
+		float forceDir[3];
+		PMCollideResultPacket(const bool in_IsCollided, const float* in_forceDir);
+	};
+
+	struct PPCollideResultPacket
+	{
+		unsigned short packetSize;
+		PacketID packetID;
+	};
 	
 	/////////////////////
 	// client -> server//
@@ -165,6 +184,13 @@ namespace Packet
 		unsigned short packetSize;
 		PacketID packetID;
 		unsigned short RoomNum;
+	};
+
+	struct PMColliderRequest
+	{
+		unsigned short packetSize;
+		PacketID packetID;
+		float monsterPos[3];
 	};
 }
 #pragma pack(pop)
