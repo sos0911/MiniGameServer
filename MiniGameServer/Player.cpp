@@ -130,6 +130,9 @@ void Player::decomposePacket(const char* packetChar)
 	{
 		Packet::PMColliderRequestPacket pmColliderRequestPacket = *(Packet::PMColliderRequestPacket*)(packetChar);
 
+		std::cout << "player position : " << m_position[0] << " : " << m_position[1] << " : " << m_position[2] << '\n';
+		std::cout << "monster position : " << pmColliderRequestPacket.monsterPos[0] << " : " << pmColliderRequestPacket.monsterPos[1] << " : " << pmColliderRequestPacket.monsterPos[2] << '\n';
+
 		float dirVec[3] = { 0.0f, 0.0f, 0.0f };
 		bool IsCollided = checkCollide(pmColliderRequestPacket.monsterPos);
 		if (IsCollided)
@@ -195,6 +198,7 @@ bool Player::checkCollide(const float* oppoPosVec)
 	{
 		sqaureDist += pow(m_position[i] - oppoPosVec[i], 2);
 	}
-	return pow((ServerProtocol::PLAYER_COLLIDER_RADIUS * 2.0f), 2) >= sqaureDist;
+	float testValue = pow((ServerProtocol::PLAYER_COLLIDER_RADIUS * 2.0f), 2);
+	return testValue >= sqaureDist;
 }
 
