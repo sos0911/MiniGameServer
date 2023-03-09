@@ -30,15 +30,15 @@ Player::Player(const Player& player)
 	this->m_roomNum = player.m_roomNum;
 }
 
-// donghyun : ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½
+// donghyun : ÇÃ·¹ÀÌ¾î ¸®½ºÆ® Ãâ·Â ½Ã »ç¿ë
 std::string Player::getInfoStr()
 {
-	return std::format("ï¿½Ì¿ï¿½ï¿½ï¿½: {}              ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ : {} : {}", m_name, m_ip, m_port);
+	return std::format("ÀÌ¿ëÀÚ: {}              Á¢¼ÓÁö : {} : {}", m_name, m_ip, m_port);
 }
 
 void Player::decomposePacket(const char* packetChar)
 {
-	// donghyun : ï¿½ï¿½Å¶ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ struct ï¿½ï¿½ï¿½ï¿½
+	// donghyun : ÆÐÅ¶ ºÐÇØ ÈÄ struct Á¶¸³
 	unsigned short packetSize = *(unsigned short*)packetChar;
 	Packet::PacketID packetID = *(Packet::PacketID*)(packetChar + sizeof(unsigned short));
 	//std::memcpy(&packetID, &packetChar[1], sizeof(Packet::PacketID));
@@ -67,16 +67,16 @@ void Player::decomposePacket(const char* packetChar)
 		// donghyun : test code
 		if (ServerManager::getInstance().getPlayerNum() == 1)
 		{
-			// donghyun : ï¿½Ú±ï¿½ ï¿½Ú½Å¹Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½
+			// donghyun : ÀÚ±â ÀÚ½Å¹Û¿¡ ¾øÀ» ½Ã ¹æ ÆÊ
 			ServerManager::getInstance().createRoom(m_fd, "5", "test");
 		}
 		else
 		{
-			// donghyun : ï¿½×½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½æ¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+			// donghyun : Å×½ºÆ®¿ëÀ¸·Î ÇÑ ¹æ¿¡ Áý¾î ³ÖÀ½
 			ServerManager::getInstance().joinRoom(2, m_fd);
-			// donghyun : ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö±â¸¶ï¿½ï¿½ Å¸ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å°ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ß°ï¿½
+			// donghyun : ÇØ´ç ¹æÀ» ÀÏÁ¤ ÁÖ±â¸¶´Ù Å¸ÀÌ¸Ó Áõ°¡½ÃÅ°´Â ¹æ ¸®½ºÆ®¿¡ Ãß°¡
 			ServerManager::getInstance().addRoomTimerList(2);
-			// donghyun : 2ï¿½ï¿½ï¿½ï¿½ Ã¡ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¶ ï¿½ï¿½Îµï¿½Ä³ï¿½ï¿½ï¿½ï¿½
+			// donghyun : 2¸íÀÌ Ã¡À» ¶§ °ÔÀÓ ½ÃÀÛ ÆÐÅ¶ ºê·ÎµåÄ³½ºÆÃ
 			ServerManager::getInstance().broadCastPacketInRoom(m_fd, 2, Packet::PacketID::GAMESTART);
 		}
 
@@ -130,14 +130,11 @@ void Player::decomposePacket(const char* packetChar)
 	{
 		Packet::PMColliderRequestPacket pmColliderRequestPacket = *(Packet::PMColliderRequestPacket*)(packetChar);
 
-		std::cout << "player position : " << m_position[0] << " : " << m_position[1] << " : " << m_position[2] << '\n';
-		std::cout << "monster position : " << pmColliderRequestPacket.monsterPos[0] << " : " << pmColliderRequestPacket.monsterPos[1] << " : " << pmColliderRequestPacket.monsterPos[2] << '\n';
-
 		float dirVec[3] = { 0.0f, 0.0f, 0.0f };
 		bool IsCollided = checkCollide(pmColliderRequestPacket.monsterPos);
 		if (IsCollided)
 		{
-			// donghyun : ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ direction vector ï¿½ï¿½ï¿½
+			// donghyun : Èû ¹ÞÀ» direction vector °è»ê
 			for (int i = 0; i < 3; ++i)
 			{
 				dirVec[i] = m_position[i] - pmColliderRequestPacket.monsterPos[i];
@@ -163,7 +160,7 @@ void Player::decomposePacket(const char* packetChar)
 		bool IsCollided = checkCollide(oppoPlayer->m_position);
 		if (IsCollided)
 		{
-			// donghyun : ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ direction vector ï¿½ï¿½ï¿½
+			// donghyun : Èû ¹ÞÀ» direction vector °è»ê
 			for (int i = 0; i < 3; ++i)
 			{
 				dirVec[i] = m_position[i] - oppoPlayer->m_position[i];
@@ -190,7 +187,7 @@ void Player::decomposePacket(const char* packetChar)
 	}
 }
 
-// donghyun : trueï¿½ï¿½ ï¿½æµ¹
+// donghyun : true¸é Ãæµ¹
 bool Player::checkCollide(const float* oppoPosVec)
 {
 	float sqaureDist = 0.0f;
@@ -198,7 +195,6 @@ bool Player::checkCollide(const float* oppoPosVec)
 	{
 		sqaureDist += pow(m_position[i] - oppoPosVec[i], 2);
 	}
-	float testValue = pow((ServerProtocol::PLAYER_COLLIDER_RADIUS * 2.0f), 2);
-	return testValue >= sqaureDist;
+	return pow((ServerProtocol::PLAYER_COLLIDER_RADIUS * 2.0f), 2) >= sqaureDist;
 }
 

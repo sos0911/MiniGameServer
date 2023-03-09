@@ -60,14 +60,14 @@ void NetworkManager::execute()
 		ErrorHandling("listen() error");
 	}
 
-	std::cout << "ï¿½ï¿½ï¿½ï¿½ ï¿½Øºï¿½ ï¿½Ï·ï¿½!" << '\n';
+	std::cout << "¼­¹ö ÁØºñ ¿Ï·á!" << '\n';
 
 	FD_ZERO(&reads);
 	FD_SET(hServsock, &reads);
 
 	fd_set cpyReads;
 
-	// donghyun : servermanager Å¸ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	// donghyun : servermanager Å¸ÀÌ¸Ó ¾²·¹µå ½ÇÇà
 	ServerManager::getInstance().RunTimer();
 
 	while (1)
@@ -91,7 +91,7 @@ void NetworkManager::execute()
 			{
 				continue;
 			}
-			// donghyun : ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã»ï¿½Ï´ï¿½ Å¬ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+			// donghyun : »õ·Î ¿¬°á ¿äÃ»ÇÏ´Â Å¬¶ó ¼ÒÄÏÀÇ °æ¿ì
 			if (reads.fd_array[i] == hServsock)
 			{
 				adrSize = sizeof(clntAdr);
@@ -114,7 +114,7 @@ void NetworkManager::execute()
 
 				if (!ServerManager::getInstance().addPlayer(player))
 				{
-					//sendMsg(reads.fd_array[i], "ï¿½Ê±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½! ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ fd ï¿½ï¿½Ä§.\n\r");
+					//sendMsg(reads.fd_array[i], "ÃÊ±â Á¢¼Ó ½ÇÆÐ! ÇÃ·¹ÀÌ¾î fd °ãÄ§.\n\r");
 					continue;
 				}
 
@@ -122,9 +122,9 @@ void NetworkManager::execute()
 				printf("client ip : %s, client port : %d\n", inet_ntop(AF_INET, &clntAdr.sin_addr,
 					clntIP, sizeof(clntIP)), ntohs(clntAdr.sin_port));
 
-				//sendMsg(hClntSock, "ï¿½ï¿½ï¿½ÓµÇ¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½. login [ï¿½Ð³ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½Â·ï¿½ ï¿½Î±ï¿½ï¿½ï¿½ ï¿½Ù¶ï¿½ï¿½Ï´ï¿½.\n\r");
+				//sendMsg(hClntSock, "Á¢¼ÓµÇ¾ú½À´Ï´Ù. login [´Ð³×ÀÓ] ÇüÅÂ·Î ·Î±×ÀÎ ¹Ù¶ø´Ï´Ù.\n\r");
 			}
-			// donghyun : ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Þ´ï¿½ ï¿½ï¿½ï¿½
+			// donghyun : ÀÌ¹Ì ¿¬°áµÈ Å¬¶ó ¼ÒÄÏ¿¡°Ô¼­ µ¥ÀÌÅÍ¸¦ ¹Þ´Â °æ¿ì
 			else
 			{
 				Player* playerPtr = ServerManager::getInstance().findPlayerUsingfd(reads.fd_array[i]);
@@ -140,7 +140,7 @@ void NetworkManager::execute()
 					ServerManager::getInstance().quitPlayer(playerPtr->m_fd);
 					closesocket(playerPtr->m_fd);
 				}
-				// donghyun : ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½
+				// donghyun : ¹ÞÀº °Ô ¹¹¶óµµ ÀÖ´Â °æ¿ì
 				else
 				{
 					playerPtr->m_bufStartIdx += strLen;
@@ -150,7 +150,7 @@ void NetworkManager::execute()
 					if (playerPtr->m_bufStartIdx >= packetSize)
 					{
 						playerPtr->m_buf[playerPtr->m_bufStartIdx] = '\0';
-						// donghyun : ï¿½ï¿½Å¶ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ char[]ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, Ã³ï¿½ï¿½ ï¿½Ñ±ï¿½
+						// donghyun : ÆÐÅ¶ ³»¿ëÀ» char[]¿¡ º¹»ç, Ã³¸® ³Ñ±è
 						char packetChar[PacketProtocol::PACKET_MAXSIZE];
 						memcpy_s(&packetChar, PacketProtocol::PACKET_MAXSIZE, playerPtr->m_buf, packetSize);
 						memcpy_s(&playerPtr->m_buf, PacketProtocol::PACKET_MAXSIZE, playerPtr->m_buf + packetSize, playerPtr->m_bufStartIdx - packetSize);
@@ -181,7 +181,7 @@ void NetworkManager::sendMsg(const std::string playerName, const std::string& ms
 	}
 }
 
-// donghyun : ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½ï¿½Í·ï¿½ send
+// donghyun : ÆÄÀÏ µð½ºÅ©·´ÅÍ·Î send
 void NetworkManager::sendMsg(const SOCKET clntFd, const std::string& msg)
 {
 	send(clntFd, msg.c_str(), static_cast<int>(msg.size()), 0);

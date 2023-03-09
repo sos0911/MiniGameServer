@@ -9,7 +9,7 @@ public:
 	u_short m_port;
 	SOCKET m_fd;
 	std::string m_name;
-	// donghyun : -1ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½, ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½ ï¿½ï¿½È£
+	// donghyun : -1ÀÌ¸é ¼ÓÇØ ÀÖÁö ¾Ê°í, ±× ¿ÜÀÇ °æ¿ì´Â ÇØ´ç ¹æ ¹øÈ£
 	int m_roomNum = -1;
 
 	int m_bufStartIdx = 0;
@@ -19,10 +19,10 @@ public:
 	float m_position[3] = { 0.0f };
 	float m_rotation[3] = { 0.0f };
 
-	// donghyun : ï¿½ï¿½ ï¿½æ¿¡ï¿½ï¿½ï¿½ï¿½ player idx
+	// donghyun : °¢ ¹æ¿¡¼­ÀÇ player idx
 	unsigned short m_infoMapIdx = -1;
 
-	//donghyun : ï¿½ï¿½ Ã³ï¿½ï¿½ Å¬ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã» ï¿½ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	//donghyun : ¸Ç Ã³À½ Å¬¶ó ¼ÒÄÏ ¿¬°á ¿äÃ» ½Ã ÀÌ¸§ÀÌ ¾øÀ» ¶§ »ç¿ëÇÏ´Â »ý¼ºÀÚ
 	Player(char ip[], u_short port, SOCKET fd, std::string name);
 	Player(SOCKET clntFd);
 	Player();
