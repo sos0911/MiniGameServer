@@ -122,6 +122,12 @@ namespace Packet
 		}
 	}
 
+	HeartPacket::HeartPacket(const unsigned short in_playerIdx, const unsigned short in_heartCnt)
+	{
+		playerIdx = in_playerIdx;
+		heartCnt = in_heartCnt;
+	}
+
 	//////////
 	// 클라 //
 	//////////

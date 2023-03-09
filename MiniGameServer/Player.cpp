@@ -135,10 +135,12 @@ void Player::decomposePacket(const char* packetChar)
 
 		float dirVec[3] = { 0.0f, 0.0f, 0.0f };
 		bool IsCollided = checkCollide(pmColliderRequestPacket.monsterPos);
+
 		if (IsCollided)
 		{
 			std::cout << "P-M collided!" << '\n';
 		}
+
 		if (IsCollided)
 		{
 			// donghyun : 힘 받을 direction vector 계산
@@ -151,6 +153,15 @@ void Player::decomposePacket(const char* packetChar)
 		Packet::PMCollideResultPacket pmcollideResultPacket(m_infoMapIdx, IsCollided, dirVec);
 		//std::cout << "PMCollideResultPacket send!" << '\n';
 		ServerManager::getInstance().broadCastPacketInRoom(m_roomNum, pmcollideResultPacket, Packet::PacketID::PMCOLLIDERESULT);
+
+		// donghyun : 충돌 검출 시 hp 깎고 정보 브로드캐스팅
+		if (IsCollided)
+		{
+			m_heartCnt--;
+			Packet::HeartPacket heartPacket(m_infoMapIdx, m_heartCnt);
+			ServerManager::getInstance().broadCastPacketInRoom(m_roomNum, heartPacket, Packet::PacketID::HEART);
+		}
+
 		break;
 	}
 	case Packet::PacketID::PPCOLLIDEREQUEST:

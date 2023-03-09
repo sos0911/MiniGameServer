@@ -87,6 +87,16 @@ public:
 			}
 			break;
 		}
+		case Packet::PacketID::HEART:
+		{
+			Packet::HeartPacket heartPacket = *(Packet::HeartPacket*)(&packet);
+			for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
+			{
+				auto playerInfo = iter->second.first;
+				NetworkManager::getInstance().sendPacket(playerInfo->m_fd, heartPacket, heartPacket.packetSize);
+			}
+			break;
+		}
 		default:
 		{
 			break;

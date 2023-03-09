@@ -21,6 +21,8 @@ public:
 
 	// donghyun : 각 방에서의 player idx
 	unsigned short m_infoMapIdx = -1;
+	// donghyun : hp 상태
+	unsigned short m_heartCnt = 3;
 
 	//donghyun : 맨 처음 클라 소켓 연결 요청 시 이름이 없을 때 사용하는 생성자
 	Player(char ip[], u_short port, SOCKET fd, std::string name);

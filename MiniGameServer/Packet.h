@@ -37,6 +37,7 @@ namespace Packet
 		TIMER,
 		PMCOLLIDERESULT,
 		PPCOLLIDERESULT,
+		HEART,
 		// client -> server
 		UPDATE,
 		LOGINREQUEST,
@@ -159,6 +160,7 @@ namespace Packet
 		PlayerCollideInfo(const unsigned short in_playerIdx, const float* in_forceDir);
 		PlayerCollideInfo(const PlayerCollideInfo& in_playerInfo);
 	};
+
 	struct PPCollideResultPacket
 	{
 		unsigned short packetSize;
@@ -167,6 +169,15 @@ namespace Packet
 		PlayerCollideInfo playerCollideInfoArr[2];
 		PPCollideResultPacket() = default;
 		PPCollideResultPacket(const bool in_IsCollided, const PlayerCollideInfo* in_playerCollideInfoArr);
+	};
+
+	struct HeartPacket
+	{
+		unsigned short packetSize = sizeof(HeartPacket);
+		PacketID packetID = Packet::PacketID::HEART;
+		unsigned short playerIdx;
+		unsigned short heartCnt;
+		HeartPacket(const unsigned short in_playerIdx, const unsigned short in_heartCnt);
 	};
 	
 	/////////////////////
