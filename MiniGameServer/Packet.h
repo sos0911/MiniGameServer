@@ -184,9 +184,9 @@ namespace Packet
 
 	struct PMColliderRequestPacket
 	{
-		unsigned short packetSize;
-		PacketID packetID;
-		float monsterPos[3];
+		const unsigned short packetSize    = sizeof( PMColliderRequestPacket );
+		const PacketID       packetID      = PacketID::PMCOLLIDEREQUEST;
+		      float          monsterPos[3];
 	};
 
 	struct PPColliderRequestPacket

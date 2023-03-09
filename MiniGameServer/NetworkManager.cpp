@@ -133,7 +133,12 @@ void NetworkManager::execute()
 					continue;
 				}
 
-				int strLen = recv(playerPtr->m_fd, playerPtr->m_buf + playerPtr->m_bufStartIdx, PacketProtocol::BUF_MAXSIZE - playerPtr->m_bufStartIdx, 0);
+				if ( playerPtr->m_bufStartIdx >= PacketProtocol::BUF_MAXSIZE )
+				{
+					volatile int hello = 0;
+				}
+
+				const int strLen = recv(playerPtr->m_fd, playerPtr->m_buf + playerPtr->m_bufStartIdx, PacketProtocol::BUF_MAXSIZE - playerPtr->m_bufStartIdx, 0);
 
 				if (strLen == 0)
 				{
@@ -145,18 +150,37 @@ void NetworkManager::execute()
 				{
 					playerPtr->m_bufStartIdx += strLen;
 
-					unsigned short packetSize = *(unsigned short*)playerPtr->m_buf;
-
-					if (playerPtr->m_bufStartIdx >= packetSize)
+					while(1)
 					{
-						playerPtr->m_buf[playerPtr->m_bufStartIdx] = '\0';
-						// donghyun : 패킷 내용을 char[]에 복사, 처리 넘김
-						char packetChar[PacketProtocol::PACKET_MAXSIZE];
-						memcpy_s(&packetChar, PacketProtocol::PACKET_MAXSIZE, playerPtr->m_buf, packetSize);
-						memcpy_s(&playerPtr->m_buf, PacketProtocol::PACKET_MAXSIZE, playerPtr->m_buf + packetSize, playerPtr->m_bufStartIdx - packetSize);
-						playerPtr->decomposePacket(packetChar);
-						playerPtr->m_bufStartIdx -= packetSize;
+						using PacketSizeType = unsigned short;
+
+						if (playerPtr->m_bufStartIdx < sizeof(PacketSizeType))
+						{
+							break;
+						}
+
+						const auto packetSize = *(PacketSizeType*)playerPtr->m_buf;
+
+						if (playerPtr->m_bufStartIdx >= packetSize)
+						{
+							playerPtr->m_buf[playerPtr->m_bufStartIdx] = '\0';
+							// donghyun : 패킷 내용을 char[]에 복사, 처리 넘김
+							char packetChar[PacketProtocol::PACKET_MAXSIZE];
+							memcpy_s(&packetChar, PacketProtocol::PACKET_MAXSIZE, playerPtr->m_buf, packetSize);
+							memcpy_s(&playerPtr->m_buf, PacketProtocol::PACKET_MAXSIZE, playerPtr->m_buf + packetSize, playerPtr->m_bufStartIdx - packetSize);
+							playerPtr->decomposePacket(packetChar);
+							playerPtr->m_bufStartIdx -= packetSize;
+
+							/*static std::vector< std::pair< Packet::PacketID, PacketSizeType > > packetSizeTypeDebugCont;
+							Packet::PacketID packetID = *(Packet::PacketID*)(packetChar + sizeof(unsigned short));
+							packetSizeTypeDebugCont.push_back({ packetID, packetSize });*/
+						}
+						else
+						{
+							break;
+						}
 					}
+
 				}
 			}
 		}
