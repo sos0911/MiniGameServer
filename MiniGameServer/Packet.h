@@ -9,12 +9,12 @@ namespace PacketProtocol
 namespace ServerProtocol
 {
 	constexpr unsigned short ROOMNAME_MAXSIZE = 32;
-	// donghyun : ms ´ÜÀ§
+	// donghyun : ms ï¿½ï¿½ï¿½ï¿½
 	constexpr unsigned int TIMER_UPDATE_PERIOD = 1000;
 	constexpr unsigned int TASK_UPDATE_PERIOD = 50;
 	constexpr unsigned int RANDNUM_SEEDRANGE = 1000;
 	constexpr unsigned int GAMEMAP_SIZE = 7;
-	// donghyun : 0¹øÂ° position Á¤º¸´Â »ç¿ëX
+	// donghyun : 0ï¿½ï¿½Â° position ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½X
 	constexpr float PLAYER_INITPOS[5][3] = { {100.0f, -100.0f, 140.0f},
 										   {100.0f, 100.0f, 140.0f},
 										   {-100.0f, -100.0f, 140.0f},
@@ -73,16 +73,16 @@ namespace Packet
 	{
 		unsigned short packetSize;
 		PacketID packetID;
-		// donghyun : row idx, ¸ðµÎ 1~7
+		// donghyun : row idx, ï¿½ï¿½ï¿½ 1~7
 		unsigned short rowIdx;
-		// donghyun : col idx, ¸ðµÎ 1~7
+		// donghyun : col idx, ï¿½ï¿½ï¿½ 1~7
 		unsigned short colIdx;
-		// donghyun : true¸é ¿ÞÂÊ(¼öÆò) or À§ÂÊ(¼öÁ÷), False¸é ¿À¸¥ÂÊ(¼öÆò) or ¾Æ·¡ÂÊ(¼öÁ÷)
+		// donghyun : trueï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½) or ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½), Falseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½) or ï¿½Æ·ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½)
 		unsigned short directionIdx;
 		SpawnPacket(bool in_IsHorizontal, unsigned short in_lineIdx, bool in_directionFlag);
 	};
 
-	// donghyun : GameStartPacket ³»¿¡ Æ÷ÇÔµÇ´Â °³º° ÇÃ·¹ÀÌ¾î Á¤º¸ ±¸Á¶Ã¼
+	// donghyun : GameStartPacket ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ÔµÇ´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¼
 	struct PlayerInfo
 	{
 		unsigned short playerIdx;
@@ -96,7 +96,7 @@ namespace Packet
 		static unsigned short getPlayerInfoByteSize();
 	};
 
-	// donghyun : °ÔÀÓ ½ÃÀÛ Àü °¢ ÇÃ·¹ÀÌ¾îÀÇ Á¤º¸¸¦ ¾Ë·ÁÁÖ´Â ÆÐÅ¶
+	// donghyun : ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ë·ï¿½ï¿½Ö´ï¿½ ï¿½ï¿½Å¶
 	struct GameStartPacket
 	{
 		unsigned short packetSize;
@@ -118,7 +118,7 @@ namespace Packet
 		unsigned short packetSize;
 		PacketID packetID;
 		char roomName[ServerProtocol::ROOMNAME_MAXSIZE];
-		// TODO : »ý¼ºÀÚ ±¸Çö
+		// TODO : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		//MakeRoomResultPacket();
 	};
 
@@ -138,7 +138,7 @@ namespace Packet
 		TimerPacket(unsigned short in_timeSecond);
 	};
 
-	// donghyun : ÇÃ-ÇÃ, ÇÃ-Åõ ¸ðµÎ¿¡ ´ëÇÑ Ãæµ¹ °á°ú ÆÐÅ¶
+	// donghyun : ï¿½ï¿½-ï¿½ï¿½, ï¿½ï¿½-ï¿½ï¿½ ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½æµ¹ ï¿½ï¿½ï¿½ ï¿½ï¿½Å¶
 	struct CollideResultPacket
 	{
 		unsigned short packetSize;
@@ -164,7 +164,7 @@ namespace Packet
 		unsigned short packetSize;
 		PacketID packetID;
 		char LoginNickname[PacketProtocol::NICKNAME_MAXSIZE];
-		// Å¬¶ó
+		// Å¬ï¿½ï¿½
 		//LoginRequestPacket(const FString& nickname);
 	};
 
