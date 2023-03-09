@@ -4,11 +4,12 @@
 
 namespace Packet
 {
-	LoginResultPacket::LoginResultPacket(bool In_LoginSuccess)
+	LoginResultPacket::LoginResultPacket(const bool in_LoginSuccess, const unsigned short in_playerIdx)
 	{
-		packetSize = sizeof(unsigned short) + sizeof(PacketID) + sizeof(bool);
+		packetSize = sizeof(LoginResultPacket);
 		packetID = PacketID::LOGINRESULT;
-		LoginSuccess = In_LoginSuccess;
+		LoginSuccess = in_LoginSuccess;
+		playerIdx = in_playerIdx;
 	}
 
 	JoinRoomResultPacket::JoinRoomResultPacket(bool In_JoinRoomSuccess)

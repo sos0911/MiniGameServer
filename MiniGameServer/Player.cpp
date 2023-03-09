@@ -52,13 +52,13 @@ void Player::decomposePacket(const char* packetChar)
 		Player* playerPtr = ServerManager::getInstance().findPlayerUsingfd(m_fd);
 		if (!playerPtr)
 		{
-			Packet::LoginResultPacket loginPacket(false);
+			Packet::LoginResultPacket loginPacket(false, -1);
 			NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
 			return;
 		}
 		if (ServerManager::getInstance().findPlayerUsingName(loginRequestPacket.LoginNickname))
 		{
-			Packet::LoginResultPacket loginPacket(false);
+			Packet::LoginResultPacket loginPacket(false, -1);
 			NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
 			return;
 		}
@@ -80,7 +80,7 @@ void Player::decomposePacket(const char* packetChar)
 			ServerManager::getInstance().broadCastPacketInRoom(m_fd, 2, Packet::PacketID::GAMESTART);
 		}
 
-		Packet::LoginResultPacket loginPacket(true);
+		Packet::LoginResultPacket loginPacket(true, m_infoMapIdx);
 		NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
 		break;
 	}

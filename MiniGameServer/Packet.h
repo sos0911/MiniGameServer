@@ -111,7 +111,9 @@ namespace Packet
 		unsigned short packetSize;
 		PacketID packetID;
 		bool LoginSuccess;
-		LoginResultPacket(bool In_LoginSuccess);
+		// donghyun : playerIdx는 로그인 실패 시 -1
+		unsigned short playerIdx;
+		LoginResultPacket(const bool in_LoginSuccess, const unsigned short in_playerIdx);
 	};
 
 	struct MakeRoomResultPacket
