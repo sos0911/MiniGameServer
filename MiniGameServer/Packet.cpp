@@ -80,16 +80,14 @@ namespace Packet
 		directionIdx = in_directionFlag ? 0 : 1;
 	}
 
-	PPCollideResultPacket::PPCollideResultPacket(const unsigned short in_playerIdx, const bool in_IsCollided, const float* in_forceDir)
+	PPCollideResultPacket::PPCollideResultPacket(const bool in_IsCollided, const PlayerCollideInfo* in_playerCollideInfoArr)
 	{
-		//packetSize = sizeof(unsigned short) + sizeof(PacketID) + sizeof(bool) + (sizeof(float) * 3);
 		packetSize = sizeof(Packet::PPCollideResultPacket);
 		packetID = PacketID::PPCOLLIDERESULT;
-		playerIdx = in_playerIdx;
 		IsCollided = in_IsCollided;
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 2; ++i)
 		{
-			forceDir[i] = in_forceDir[i];
+			playerCollideInfoArr[i] = in_playerCollideInfoArr[i];
 		}
 	}
 
@@ -103,6 +101,24 @@ namespace Packet
 		for (int i = 0; i < 3; i++)
 		{
 			forceDir[i] = in_forceDir[i];
+		}
+	}
+
+	PlayerCollideInfo::PlayerCollideInfo(const unsigned short in_playerIdx, const float* in_forceDir)
+	{
+		playerIdx = in_playerIdx;
+		for (int i = 0; i < 3; ++i)
+		{
+			forceDir[i] = in_forceDir[i];
+		}
+	}
+
+	PlayerCollideInfo::PlayerCollideInfo(const PlayerCollideInfo& in_playerInfo)
+	{
+		playerIdx = in_playerInfo.playerIdx;
+		for (int i = 0; i < 3; ++i)
+		{
+			forceDir[i] = in_playerInfo.forceDir[i];
 		}
 	}
 

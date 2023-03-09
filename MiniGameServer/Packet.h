@@ -138,18 +138,6 @@ namespace Packet
 		TimerPacket(unsigned short in_timeSecond);
 	};
 
-	// donghyun : 플-플 충돌 결과 패킷
-	struct PPCollideResultPacket
-	{
-		unsigned short packetSize;
-		PacketID packetID;
-		unsigned short playerIdx;
-		bool IsCollided;
-		float forceDir[3];
-		PPCollideResultPacket() = default;
-		PPCollideResultPacket(const unsigned short in_playerIdx, const bool in_IsCollided, const float* in_forceDir);
-	};
-
 	// donghyun : 플-투 충돌 결과 패킷
 	struct PMCollideResultPacket
 	{
@@ -160,6 +148,25 @@ namespace Packet
 		float forceDir[3];
 		PMCollideResultPacket() = default;
 		PMCollideResultPacket(const unsigned short in_playerIdx, const bool in_IsCollided, const float* in_forceDir);
+	};
+
+	// donghyun : 플-플 충돌 결과 패킷
+	struct PlayerCollideInfo
+	{
+		unsigned short playerIdx;
+		float forceDir[3];
+		PlayerCollideInfo() = default;
+		PlayerCollideInfo(const unsigned short in_playerIdx, const float* in_forceDir);
+		PlayerCollideInfo(const PlayerCollideInfo& in_playerInfo);
+	};
+	struct PPCollideResultPacket
+	{
+		unsigned short packetSize;
+		PacketID packetID;
+		bool IsCollided;
+		PlayerCollideInfo playerCollideInfoArr[2];
+		PPCollideResultPacket() = default;
+		PPCollideResultPacket(const bool in_IsCollided, const PlayerCollideInfo* in_playerCollideInfoArr);
 	};
 	
 	/////////////////////

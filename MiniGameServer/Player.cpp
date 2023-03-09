@@ -130,11 +130,15 @@ void Player::decomposePacket(const char* packetChar)
 	{
 		Packet::PMColliderRequestPacket pmColliderRequestPacket = *(Packet::PMColliderRequestPacket*)(packetChar);
 
-		std::cout << "player position : " << m_position[0] << " : " << m_position[1] << " : " << m_position[2] << '\n';
-		std::cout << "monster position : " << pmColliderRequestPacket.monsterPos[0] << " : " << pmColliderRequestPacket.monsterPos[1] << " : " << pmColliderRequestPacket.monsterPos[2] << '\n';
+		//std::cout << "player position : " << m_position[0] << " : " << m_position[1] << " : " << m_position[2] << '\n';
+		//std::cout << "monster position : " << pmColliderRequestPacket.monsterPos[0] << " : " << pmColliderRequestPacket.monsterPos[1] << " : " << pmColliderRequestPacket.monsterPos[2] << '\n';
 
 		float dirVec[3] = { 0.0f, 0.0f, 0.0f };
 		bool IsCollided = checkCollide(pmColliderRequestPacket.monsterPos);
+		if (IsCollided)
+		{
+			std::cout << "P-M collided!" << '\n';
+		}
 		if (IsCollided)
 		{
 			// donghyun : Èû ¹ÞÀ» direction vector °è»ê
@@ -145,6 +149,7 @@ void Player::decomposePacket(const char* packetChar)
 		}
 
 		Packet::PMCollideResultPacket pmcollideResultPacket(m_infoMapIdx, IsCollided, dirVec);
+		//std::cout << "PMCollideResultPacket send!" << '\n';
 		ServerManager::getInstance().broadCastPacketInRoom(m_roomNum, pmcollideResultPacket, Packet::PacketID::PMCOLLIDERESULT);
 		break;
 	}
@@ -152,15 +157,24 @@ void Player::decomposePacket(const char* packetChar)
 	{
 		Packet::PPColliderRequestPacket ppColliderRequestPacket = *(Packet::PPColliderRequestPacket*)(packetChar);
 
-		float dirVec[3] = { 0.0f, 0.0f, 0.0f };
-
 		Player* oppoPlayer = ServerManager::getInstance().findPlayerUsingInfoMapIdx(ppColliderRequestPacket.oppoPlayerIdx);
 		if (!oppoPlayer)
 		{
 			return;
 		}
 
+		std::cout << "oppo pos : "<< oppoPlayer->m_position[0] << " : " << oppoPlayer->m_position[1] << oppoPlayer->m_position[2] << '\n';
+		std::cout << "my pos : " << oppoPlayer->m_position[0] << " : " << oppoPlayer->m_position[1] << oppoPlayer->m_position[2] << '\n';
+
 		bool IsCollided = checkCollide(oppoPlayer->m_position);
+		if (IsCollided)
+		{
+			std::cout << "P-P collided!" << '\n';
+		}
+
+		float dirVec[3] = { 0.0f, 0.0f, 0.0f };
+		float oppoDirVec[3] = { 0.0f, 0.0f, 0.0f };
+
 		if (IsCollided)
 		{
 			// donghyun : Èû ¹ÞÀ» direction vector °è»ê
@@ -170,17 +184,20 @@ void Player::decomposePacket(const char* packetChar)
 			}
 		}
 
-		Packet::PPCollideResultPacket pCollideResultPacket(m_infoMapIdx, IsCollided, dirVec);
-		NetworkManager::getInstance().sendPacket(m_fd, pCollideResultPacket, pCollideResultPacket.packetSize);
-
 		for (int i = 0; i < 3; ++i)
 		{
-			dirVec[i] = -dirVec[i];
+			oppoDirVec[i] = -dirVec[i];
 		}
 
-		Packet::PPCollideResultPacket oCollideResultPacket(m_infoMapIdx, IsCollided, dirVec);
-		NetworkManager::getInstance().sendPacket(oppoPlayer->m_fd, oCollideResultPacket, oCollideResultPacket.packetSize);
+		Packet::PlayerCollideInfo playerCollideInfo_1(m_infoMapIdx, dirVec);
+		Packet::PlayerCollideInfo playerCollideInfo_2(oppoPlayer->m_infoMapIdx, oppoDirVec);
 
+		Packet::PlayerCollideInfo playerCollideInfoArr[2] = { playerCollideInfo_1, playerCollideInfo_2 };
+
+		Packet::PPCollideResultPacket ppCollideResultPacket(IsCollided, playerCollideInfoArr);
+
+		NetworkManager::getInstance().sendPacket(m_fd, ppCollideResultPacket, ppCollideResultPacket.packetSize);
+		NetworkManager::getInstance().sendPacket(oppoPlayer->m_fd, ppCollideResultPacket, ppCollideResultPacket.packetSize);
 		break;
 	}
 	default:
