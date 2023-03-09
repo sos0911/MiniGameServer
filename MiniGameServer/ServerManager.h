@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "Packet.h"
 #include "BaseTaskManager.h"
+#include "NetworkManager.h"
 
 class ServerManager : public Singleton<ServerManager>, public BaseTaskManager
 {
@@ -53,6 +54,46 @@ public:
 	void broadCastChatInRoom(SOCKET clntfd, int roomNum, std::string& msg);
 	void broadCastInRoom(int roomNum, std::string& msg);
 	void broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Packet::PacketID packetID);
+
+	template< class PacketType >
+	void broadCastPacketInRoom(int roomNum, PacketType& packet, Packet::PacketID packetID)
+	{
+		if (roomList.find(roomNum) == roomList.end())
+		{
+			return;
+		}
+		
+		Room& room = roomList[roomNum];
+		
+		switch (packetID)
+		{
+		case Packet::PacketID::PPCOLLIDERESULT:
+		{
+			Packet::PPCollideResultPacket ppcollideResultPacket = *(Packet::PPCollideResultPacket*)( &packet );
+			for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
+			{
+				auto playerInfo = iter->second.first;
+				NetworkManager::getInstance().sendPacket(playerInfo->m_fd, ppcollideResultPacket, ppcollideResultPacket.packetSize);
+			}
+			break;
+		}
+		case Packet::PacketID::PMCOLLIDERESULT:
+		{
+			Packet::PMCollideResultPacket pmcollideResultPacket = *(Packet::PMCollideResultPacket*)(&packet);
+			for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
+			{
+				auto playerInfo = iter->second.first;
+				NetworkManager::getInstance().sendPacket(playerInfo->m_fd, pmcollideResultPacket, pmcollideResultPacket.packetSize);
+			}
+			break;
+		}
+		default:
+		{
+			break;
+		}
+		}
+	}
+
 	void quitPlayer(const SOCKET clntfd);
 	void quitRoom(const int roomNum, Player* playerPtr);
 	bool addPlayer(Player& player);

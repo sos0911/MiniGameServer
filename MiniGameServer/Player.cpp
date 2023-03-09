@@ -144,8 +144,8 @@ void Player::decomposePacket(const char* packetChar)
 			}
 		}
 
-		Packet::CollideResultPacket collideResultPacket(IsCollided, dirVec);
-		NetworkManager::getInstance().sendPacket(m_fd, collideResultPacket, collideResultPacket.packetSize);
+		Packet::PMCollideResultPacket pmcollideResultPacket(m_infoMapIdx, IsCollided, dirVec);
+		ServerManager::getInstance().broadCastPacketInRoom(m_roomNum, pmcollideResultPacket, Packet::PacketID::PMCOLLIDERESULT);
 		break;
 	}
 	case Packet::PacketID::PPCOLLIDEREQUEST:
@@ -170,7 +170,7 @@ void Player::decomposePacket(const char* packetChar)
 			}
 		}
 
-		Packet::CollideResultPacket pCollideResultPacket(IsCollided, dirVec);
+		Packet::PPCollideResultPacket pCollideResultPacket(m_infoMapIdx, IsCollided, dirVec);
 		NetworkManager::getInstance().sendPacket(m_fd, pCollideResultPacket, pCollideResultPacket.packetSize);
 
 		for (int i = 0; i < 3; ++i)
@@ -178,7 +178,7 @@ void Player::decomposePacket(const char* packetChar)
 			dirVec[i] = -dirVec[i];
 		}
 
-		Packet::CollideResultPacket oCollideResultPacket(IsCollided, dirVec);
+		Packet::PPCollideResultPacket oCollideResultPacket(m_infoMapIdx, IsCollided, dirVec);
 		NetworkManager::getInstance().sendPacket(oppoPlayer->m_fd, oCollideResultPacket, oCollideResultPacket.packetSize);
 
 		break;

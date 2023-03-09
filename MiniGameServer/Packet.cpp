@@ -80,10 +80,25 @@ namespace Packet
 		directionIdx = in_directionFlag ? 0 : 1;
 	}
 
-	CollideResultPacket::CollideResultPacket(const bool in_IsCollided, const float* in_forceDir)
+	PPCollideResultPacket::PPCollideResultPacket(const unsigned short in_playerIdx, const bool in_IsCollided, const float* in_forceDir)
 	{
-		packetSize = sizeof(unsigned short) + sizeof(PacketID) + sizeof(bool) + (sizeof(float) * 3);
+		//packetSize = sizeof(unsigned short) + sizeof(PacketID) + sizeof(bool) + (sizeof(float) * 3);
+		packetSize = sizeof(Packet::PPCollideResultPacket);
+		packetID = PacketID::PPCOLLIDERESULT;
+		playerIdx = in_playerIdx;
+		IsCollided = in_IsCollided;
+		for (int i = 0; i < 3; i++)
+		{
+			forceDir[i] = in_forceDir[i];
+		}
+	}
+
+	PMCollideResultPacket::PMCollideResultPacket(const unsigned short in_playerIdx, const bool in_IsCollided, const float* in_forceDir)
+	{
+		//packetSize = sizeof(unsigned short) + sizeof(PacketID) + sizeof(bool) + (sizeof(float) * 3);
+		packetSize = sizeof(Packet::PMCollideResultPacket);
 		packetID = PacketID::PMCOLLIDERESULT;
+		playerIdx = in_playerIdx;
 		IsCollided = in_IsCollided;
 		for (int i = 0; i < 3; i++)
 		{
