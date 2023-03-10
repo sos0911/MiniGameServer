@@ -138,7 +138,7 @@ void Player::decomposePacket(const char* packetChar)
 
 		if (IsCollided)
 		{
-			std::cout << "P-M collided!" << '\n';
+			//std::cout << "P-M collided!" << '\n';
 		}
 
 		if (IsCollided)
@@ -174,13 +174,13 @@ void Player::decomposePacket(const char* packetChar)
 			return;
 		}
 
-		std::cout << "oppo pos : "<< oppoPlayer->m_position[0] << " : " << oppoPlayer->m_position[1] << oppoPlayer->m_position[2] << '\n';
-		std::cout << "my pos : " << oppoPlayer->m_position[0] << " : " << oppoPlayer->m_position[1] << oppoPlayer->m_position[2] << '\n';
+		//std::cout << "oppo pos : "<< oppoPlayer->m_position[0] << " : " << oppoPlayer->m_position[1] << oppoPlayer->m_position[2] << '\n';
+		//std::cout << "my pos : " << oppoPlayer->m_position[0] << " : " << oppoPlayer->m_position[1] << oppoPlayer->m_position[2] << '\n';
 
 		bool IsCollided = checkCollide(oppoPlayer->m_position);
 		if (IsCollided)
 		{
-			std::cout << "P-P collided!" << '\n';
+			//std::cout << "P-P collided!" << '\n';
 		}
 
 		float dirVec[3] = { 0.0f, 0.0f, 0.0f };
