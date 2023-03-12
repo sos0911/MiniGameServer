@@ -482,31 +482,92 @@ void ServerManager::UpdateRoomTimer()
 		}
 
 		Room& room = roomList[roomNum];
-		room.curPlayTime++;
+
+		// donghyun : mutex 처리
+		std::lock_guard<std::mutex> lockGuard(m_mutex);
+		{
+			room.curPlayTime++;
+		}
+
+		// donghyun : 타이머 패킷 만들어서 전송
+		Packet::TimerPacket timerPacket(room.curPlayTime);
+		//// donghyun : 스폰 패킷 만들어서 전송 (방향, idx 등은 모두 랜덤)
+		//srand(time(NULL)); // 시드(seed) 값을 현재 시간으로 설정
+		//int rand_num = -1;
+
+		//rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
+		//bool IsHorizontal = rand_num % 2 == 0 ? true : false;
+		//rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
+		//unsigned short lineIdx = rand_num % ServerProtocol::GAMEMAP_SIZE + 1;
+		//rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
+		//bool directionFlag = rand_num % 2 == 0 ? true : false;
+
+		//Packet::SpawnPacket spawnPacket(IsHorizontal, lineIdx, directionFlag);
 
 		// 각 방의 플레이어들에게 타이머 전송
 		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
 		{
 			auto playerPtr = iter->second.first;
-			// donghyun : 타이머 패킷 만들어서 전송
-			Packet::TimerPacket timerPacket(room.curPlayTime);
+	
 			NetworkManager::getInstance().sendPacket(playerPtr->m_fd, timerPacket, timerPacket.packetSize);
-
-			// donghyun : 스폰 패킷 만들어서 전송 (방향, idx 등은 모두 랜덤)
-			srand(time(NULL)); // 시드(seed) 값을 현재 시간으로 설정
-			int rand_num = -1;
-
-			rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
-			bool IsHorizontal = rand_num % 2 == 0 ? true : false;
-			rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
-			unsigned short lineIdx = rand_num % ServerProtocol::GAMEMAP_SIZE + 1;
-			rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
-			bool directionFlag = rand_num % 2 == 0 ? true : false;
-
-			Packet::SpawnPacket spawnPacket(IsHorizontal, lineIdx, directionFlag);
-			NetworkManager::getInstance().sendPacket(playerPtr->m_fd, spawnPacket, spawnPacket.packetSize);
+			//NetworkManager::getInstance().sendPacket(playerPtr->m_fd, spawnPacket, spawnPacket.packetSize);
 		}
 	}
+}
+
+void ServerManager::RunSpawner(const int roomNum)
+{
+	//스폰 타이머 만들기
+	std::jthread spawnThread = static_cast<std::jthread>
+		([this, roomNum](std::stop_token stoken)
+			{
+				int spawnPhaseIdx = 0;
+				while (!stoken.stop_requested())
+				{
+					// 특정 구간마다 깨어나서 해당 메소드 실행
+					auto roomItr = roomList.find(roomNum);
+					if (roomItr == roomList.end())
+					{
+						continue;
+					}
+					Room& room = roomItr->second;
+
+					// donghyun : 스폰 패킷 만들어서 전송 (방향, idx 등은 모두 랜덤)
+					srand(time(NULL)); // 시드(seed) 값을 현재 시간으로 설정
+					int rand_num = -1;
+
+					rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
+					bool IsHorizontal = rand_num % 2 == 0 ? true : false;
+					rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
+					unsigned short lineIdx = rand_num % ServerProtocol::GAMEMAP_SIZE + 1;
+					rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
+					bool directionFlag = rand_num % 2 == 0 ? true : false;
+
+					Packet::SpawnPacket spawnPacket(IsHorizontal, lineIdx, directionFlag);
+
+					// 각 방의 플레이어들에게 스폰 패킷 전송
+					for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
+					{
+						auto playerPtr = iter->second.first;
+						NetworkManager::getInstance().sendPacket(playerPtr->m_fd, spawnPacket, spawnPacket.packetSize);
+					}
+
+					// donghyun : mutex 적용
+					unsigned short curPlayTime = 0;
+					{
+						std::lock_guard<std::mutex> lockGuard(m_mutex);
+						curPlayTime = room.curPlayTime;
+					}
+
+					if (curPlayTime >= ServerProtocol::SPAWN_PHASE_TIMES[spawnPhaseIdx])
+					{
+						spawnPhaseIdx++;
+					}
+					std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(ServerProtocol::SPAWN_PHASE_INTERVALS[spawnPhaseIdx - 1]));
+				}
+			});
+	
+	m_spawnThreadSet.insert(std::move(spawnThread));
 }
 
 // donghyun : 만약 못찾았을 때는 nullptr 반환

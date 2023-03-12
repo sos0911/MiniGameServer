@@ -20,6 +20,9 @@ public:
 	// donghyun : 현재 게임이 진행된 시간 (초 단위)
 	unsigned short curPlayTime;
 
+	//// donghyun : 방마다의 spawn thread
+	//std::jthread m_timerThread;
+
 	Room();
 	Room(const std::string& in_roomName, int in_maxPartCnt, Player& in_player);
 	// donghyun : 복사생성자는 디폴트로 둔다 (map insert 시 사용됨)

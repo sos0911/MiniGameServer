@@ -9,6 +9,12 @@
 #include "BaseTaskManager.h"
 #include "NetworkManager.h"
 
+struct JthreadLess {
+	bool operator()(const std::jthread& lhs, const std::jthread& rhs) const {
+		return lhs.get_id() < rhs.get_id();
+	}
+};
+
 class ServerManager : public Singleton<ServerManager>, public BaseTaskManager
 {
 private:
@@ -26,7 +32,10 @@ private:
 	// donghyun : 타이머가 업데이트가 되야 할 방 번호들 (이미 게임 시작한 방들)
 	std::set<int> updateRoomTimerList;
 
+	// donghyun : thread & lock mutex
 	std::jthread m_timerThread;
+	std::set< std::jthread, JthreadLess> m_spawnThreadSet;
+	std::mutex m_mutex;
 
 public:
 
@@ -113,6 +122,7 @@ public:
 	// donghyun : threads methods
 	void RunTimer();
 	void UpdateRoomTimer();
+	void RunSpawner(const int roomNum);
 
 	//// packet generate method
 	//Packet::GameStartPacket& makeGameStartPacket();

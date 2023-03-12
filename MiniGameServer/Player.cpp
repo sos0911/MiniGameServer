@@ -67,7 +67,7 @@ void Player::decomposePacket(const char* packetChar)
 		// donghyun : test code
 		if (ServerManager::getInstance().getPlayerNum() == 1)
 		{
-			// donghyun : 자기 자신밖에 없을 시 방 팜
+			// donghyun : 자기 자신밖에 없을시 방 팜
 			ServerManager::getInstance().createRoom(m_fd, "5", "test");
 		}
 		else
@@ -78,6 +78,7 @@ void Player::decomposePacket(const char* packetChar)
 			ServerManager::getInstance().addRoomTimerList(2);
 			// donghyun : 2명이 찼을 때 게임 시작 패킷 브로드캐스팅
 			ServerManager::getInstance().broadCastPacketInRoom(m_fd, 2, Packet::PacketID::GAMESTART);
+			ServerManager::getInstance().RunSpawner(2);
 		}
 
 		Packet::LoginResultPacket loginPacket(true, m_infoMapIdx);

@@ -11,6 +11,11 @@ namespace ServerProtocol
 	constexpr unsigned short ROOMNAME_MAXSIZE = 32;
 	// donghyun : ms ¥‹¿ß
 	constexpr unsigned int TIMER_UPDATE_PERIOD = 1000;
+
+	constexpr unsigned short PLAYTIME_MAXSIZE = 9999;
+	constexpr unsigned short SPAWN_PHASE_TIMES[] =	   {    0,    5,   10,  15,  20,  30, 40, PLAYTIME_MAXSIZE };
+	constexpr unsigned short SPAWN_PHASE_INTERVALS[] = { 4000, 2000, 1000, 500, 250, 125, 62 };
+
 	constexpr unsigned int TASK_UPDATE_PERIOD = 50;
 	constexpr unsigned int RANDNUM_SEEDRANGE = 1000;
 	constexpr unsigned int GAMEMAP_SIZE = 7;
