@@ -90,7 +90,7 @@ namespace Packet
 		char nickName[PacketProtocol::NICKNAME_MAXSIZE];
 		float posVec[3];
 		float rotVec[3];
-		PlayerInfo() {}
+		PlayerInfo() = default;
 		PlayerInfo(unsigned short in_playerIdx, const char* in_nickName, const float* in_posVec, const float* in_rotvec);
 		PlayerInfo(const PlayerInfo& in_playerInfo);
 
@@ -153,24 +153,26 @@ namespace Packet
 		PMCollideResultPacket(const unsigned short in_playerIdx, const bool in_IsCollided, const float* in_forceDir);
 	};
 
-	// donghyun : 플-플 충돌 결과 패킷
-	struct PlayerCollideInfo
-	{
-		unsigned short playerIdx;
-		float forceDir[3];
-		PlayerCollideInfo() = default;
-		PlayerCollideInfo(const unsigned short in_playerIdx, const float* in_forceDir);
-		PlayerCollideInfo(const PlayerCollideInfo& in_playerInfo);
-	};
+	//// donghyun : 플-플 충돌 결과 패킷
+	//struct PlayerCollideInfo
+	//{
+	//	unsigned short playerIdx;
+	//	float forceDir[3];
+	//	PlayerCollideInfo() = default;
+	//	PlayerCollideInfo(const unsigned short in_playerIdx, const float* in_forceDir);
+	//	PlayerCollideInfo(const PlayerCollideInfo& in_playerInfo);
+	//};
 
 	struct PPCollideResultPacket
 	{
 		unsigned short packetSize;
 		PacketID packetID;
 		bool IsCollided;
-		PlayerCollideInfo playerCollideInfoArr[2];
+		//PlayerCollideInfo playerCollideInfoArr[2];
+		float forceDir[3];
 		PPCollideResultPacket() = default;
-		PPCollideResultPacket(const bool in_IsCollided, const PlayerCollideInfo* in_playerCollideInfoArr);
+		//PPCollideResultPacket(const bool in_IsCollided, const PlayerCollideInfo* in_playerCollideInfoArr);
+		PPCollideResultPacket(const bool in_IsCollided, const float* in_forceDir);
 	};
 
 	struct HeartPacket

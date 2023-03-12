@@ -81,7 +81,7 @@ namespace Packet
 		directionIdx = in_directionFlag ? 0 : 1;
 	}
 
-	PPCollideResultPacket::PPCollideResultPacket(const bool in_IsCollided, const PlayerCollideInfo* in_playerCollideInfoArr)
+	/*PPCollideResultPacket::PPCollideResultPacket(const bool in_IsCollided, const PlayerCollideInfo* in_playerCollideInfoArr)
 	{
 		packetSize = sizeof(Packet::PPCollideResultPacket);
 		packetID = PacketID::PPCOLLIDERESULT;
@@ -89,6 +89,17 @@ namespace Packet
 		for (int i = 0; i < 2; ++i)
 		{
 			playerCollideInfoArr[i] = in_playerCollideInfoArr[i];
+		}
+	}*/
+
+	PPCollideResultPacket::PPCollideResultPacket(const bool in_IsCollided, const float* in_forceDir)
+	{
+		packetSize = sizeof(Packet::PPCollideResultPacket);
+		packetID = PacketID::PPCOLLIDERESULT;
+		IsCollided = in_IsCollided;
+		for (int i = 0; i < 3; ++i)
+		{
+			forceDir[i] = in_forceDir[i];
 		}
 	}
 
@@ -105,7 +116,7 @@ namespace Packet
 		}
 	}
 
-	PlayerCollideInfo::PlayerCollideInfo(const unsigned short in_playerIdx, const float* in_forceDir)
+	/*PlayerCollideInfo::PlayerCollideInfo(const unsigned short in_playerIdx, const float* in_forceDir)
 	{
 		playerIdx = in_playerIdx;
 		for (int i = 0; i < 3; ++i)
@@ -121,7 +132,7 @@ namespace Packet
 		{
 			forceDir[i] = in_playerInfo.forceDir[i];
 		}
-	}
+	}*/
 
 	HeartPacket::HeartPacket(const unsigned short in_playerIdx, const unsigned short in_heartCnt)
 	{

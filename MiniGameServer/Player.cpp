@@ -200,7 +200,7 @@ void Player::decomposePacket(const char* packetChar)
 			oppoDirVec[i] = -dirVec[i];
 		}
 
-		Packet::PlayerCollideInfo playerCollideInfo_1(m_infoMapIdx, dirVec);
+		/*Packet::PlayerCollideInfo playerCollideInfo_1(m_infoMapIdx, dirVec);
 		Packet::PlayerCollideInfo playerCollideInfo_2(oppoPlayer->m_infoMapIdx, oppoDirVec);
 
 		Packet::PlayerCollideInfo playerCollideInfoArr[2] = { playerCollideInfo_1, playerCollideInfo_2 };
@@ -208,7 +208,13 @@ void Player::decomposePacket(const char* packetChar)
 		Packet::PPCollideResultPacket ppCollideResultPacket(IsCollided, playerCollideInfoArr);
 
 		NetworkManager::getInstance().sendPacket(m_fd, ppCollideResultPacket, ppCollideResultPacket.packetSize);
-		NetworkManager::getInstance().sendPacket(oppoPlayer->m_fd, ppCollideResultPacket, ppCollideResultPacket.packetSize);
+		NetworkManager::getInstance().sendPacket(oppoPlayer->m_fd, ppCollideResultPacket, ppCollideResultPacket.packetSize);*/
+
+		Packet::PPCollideResultPacket pCollideResultPacket(IsCollided, dirVec);
+		Packet::PPCollideResultPacket oCollideResultPacket(IsCollided, oppoDirVec);
+
+		NetworkManager::getInstance().sendPacket(m_fd, pCollideResultPacket, pCollideResultPacket.packetSize);
+		NetworkManager::getInstance().sendPacket(oppoPlayer->m_fd, oCollideResultPacket, oCollideResultPacket.packetSize);
 		break;
 	}
 	default:
