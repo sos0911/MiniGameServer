@@ -14,7 +14,7 @@ namespace ServerProtocol
 
 	constexpr unsigned short PLAYTIME_MAXSIZE = 9999;
 	constexpr unsigned short SPAWN_PHASE_TIMES[] =	   {    0,    5,   10,  15,  20,  30, 40, PLAYTIME_MAXSIZE };
-	constexpr unsigned short SPAWN_PHASE_INTERVALS[] = { 4000, 2000, 1000, 500, 250, 125, 62 };
+	constexpr unsigned short SPAWN_PHASE_INTERVALS[] = { 1100, 2100, 1100, 2100, 1100, 2100, 1100 };
 
 	constexpr unsigned int TASK_UPDATE_PERIOD = 50;
 	constexpr unsigned int RANDNUM_SEEDRANGE = 1000;

@@ -491,6 +491,7 @@ void ServerManager::UpdateRoomTimer()
 
 		// donghyun : 타이머 패킷 만들어서 전송
 		Packet::TimerPacket timerPacket(room.curPlayTime);
+		std::cout << "current time : " << room.curPlayTime << '\n';
 		//// donghyun : 스폰 패킷 만들어서 전송 (방향, idx 등은 모두 랜덤)
 		//srand(time(NULL)); // 시드(seed) 값을 현재 시간으로 설정
 		//int rand_num = -1;
@@ -517,6 +518,7 @@ void ServerManager::UpdateRoomTimer()
 
 void ServerManager::RunSpawner(const int roomNum)
 {
+	std::cout << "spawner thread incoming!" << '\n';
 	//스폰 타이머 만들기
 	std::jthread spawnThread = static_cast<std::jthread>
 		([this, roomNum](std::stop_token stoken)
@@ -533,7 +535,18 @@ void ServerManager::RunSpawner(const int roomNum)
 					Room& room = roomItr->second;
 
 					// donghyun : 스폰 패킷 만들어서 전송 (방향, idx 등은 모두 랜덤)
-					srand(time(NULL)); // 시드(seed) 값을 현재 시간으로 설정
+					//srand(time(NULL)); // 시드(seed) 값을 현재 시간으로 설정
+
+					// std::chrono::system_clock의 현재 시간을 가져온다.
+					auto now = std::chrono::system_clock::now();
+
+					// now의 시간을 epoch 이후의 밀리초 단위로 계산한다.
+					auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
+
+					// now_ms의 시간을 시드로 사용하여 난수 생성기를 초기화한다.
+					auto seed = now_ms.time_since_epoch().count();
+					std::srand(static_cast<unsigned int>(seed));
+
 					int rand_num = -1;
 
 					rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
@@ -544,6 +557,7 @@ void ServerManager::RunSpawner(const int roomNum)
 					bool directionFlag = rand_num % 2 == 0 ? true : false;
 
 					Packet::SpawnPacket spawnPacket(IsHorizontal, lineIdx, directionFlag);
+					std::cout << "spawn packet send :: " << IsHorizontal << " :: " << lineIdx << " :: " << directionFlag << '\n';
 
 					// 각 방의 플레이어들에게 스폰 패킷 전송
 					for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
@@ -563,6 +577,9 @@ void ServerManager::RunSpawner(const int roomNum)
 					{
 						spawnPhaseIdx++;
 					}
+
+					std::cout << "spawnthread :: sleep for : " << ServerProtocol::SPAWN_PHASE_INTERVALS[spawnPhaseIdx - 1] << '\n';
+
 					std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(ServerProtocol::SPAWN_PHASE_INTERVALS[spawnPhaseIdx - 1]));
 				}
 			});
