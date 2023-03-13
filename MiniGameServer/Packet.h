@@ -25,11 +25,13 @@ namespace ServerProtocol
 										   {-100.0f, -100.0f, 140.0f},
 										   {-100.0f, 100.0f, 140.0f},
 										   {0.0f, 0.0f, 140.0f} };
-	constexpr float PLAYER_COLLIDER_RADIUS = 75.0f;
+	constexpr float PLAYER_COLLIDER_RADIUS = 65.0f;
 	// donghyun : 언리얼 기준 width (x축?)
-	constexpr float MONSTER_BOX_COLLIDER_WIDTH = 75.0f;
+	constexpr float MONSTER_BOX_COLLIDER_WIDTH = 230.0f;
 	// donghyun : 언리얼 기준 height (y축?)
-	constexpr float MONSTER_BOX_COLLIDER_HEIGHT = 75.0f;
+	constexpr float MONSTER_BOX_COLLIDER_HEIGHT = 120.0f;
+
+	constexpr float ROOM_MAXPARTCNT = 2;
 }
 #pragma pack(push,1)
 namespace Packet

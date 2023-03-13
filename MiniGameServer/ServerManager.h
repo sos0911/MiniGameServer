@@ -29,6 +29,8 @@ private:
 	// donghyun : key는 방 번호이다.
 	std::map<int, Room> roomList;
 	int lastRoomNum = 1;
+	// donghyun : 아직 게임을 시작하지 않은 애들 수
+	int startWaitingPlayerNum = 0;
 	// donghyun : 타이머가 업데이트가 되야 할 방 번호들 (이미 게임 시작한 방들)
 	std::set<int> updateRoomTimerList;
 
@@ -46,18 +48,23 @@ public:
 	//virtual ~ServerManager() {}
 
 	void login(SOCKET clntfd, std::vector<std::string>& splitStrList);
+	void loginProcess(const SOCKET clntfd, const char* packetChar);
 	void showHelp(const SOCKET clntfd);
 	void showChatHelp(const SOCKET clntfd);
-	void createRoom(const SOCKET clntfd, const std::string& maxCntStr, const std::string& roomName);
+	void createRoom(const SOCKET clntfd, const unsigned short maxCnt);
 	void sendWhisper(std::vector<std::string>& splitStrList, const SOCKET clntfd);
 	void showRoomInfo(int roomNum, const SOCKET clntfd);
 	void showRoomList(const SOCKET clntfd);
 	void showPlayerInfo(std::string& playerName, const SOCKET clntfd);
 	void showPlayerList(const SOCKET clntfd);
 
-	void joinRoom(const int roomNum, const SOCKET clntfd);
+	bool joinRoom(const int roomNum, const SOCKET clntfd);
 
-	int getLastRoomNum() { return ++lastRoomNum; }
+	// donghyun : get, set 관련 함수들
+	int getLastRoomNum() { return lastRoomNum; }
+	int getStartWaitingPlayerNum() { return startWaitingPlayerNum; }
+	void increaseLastRoomNum() { ++lastRoomNum; }
+	void increaseStartWaitingPlayerNum() { ++startWaitingPlayerNum; }
 
 	int getChatRoomNum(SOCKET clntfd);
 	void broadCastChatInRoom(SOCKET clntfd, int roomNum, std::string& msg);
@@ -117,6 +124,8 @@ public:
 	void quitRoom(const int roomNum, Player* playerPtr);
 	bool addPlayer(Player& player);
 	int getPlayerNum();
+	int getLoginedPlayerNum();
+	int getNoRoomPlayerNum();
 	void addRoomTimerList(const int roomNum);
 
 	// donghyun : threads methods

@@ -24,6 +24,6 @@ public:
 	//std::jthread m_timerThread;
 
 	Room();
-	Room(const std::string& in_roomName, int in_maxPartCnt, Player& in_player);
+	Room(int in_maxPartCnt, Player& in_player);
 	// donghyun : 복사생성자는 디폴트로 둔다 (map insert 시 사용됨)
 };

@@ -47,44 +47,7 @@ void Player::decomposePacket(const char* packetChar)
 	{
 	case Packet::PacketID::LOGINREQUEST:
 	{
-		Packet::LoginRequestPacket loginRequestPacket = *(Packet::LoginRequestPacket*)(packetChar);
-
-		Player* playerPtr = ServerManager::getInstance().findPlayerUsingfd(m_fd);
-		if (!playerPtr)
-		{
-			Packet::LoginResultPacket loginPacket(false, -1);
-			NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
-			return;
-		}
-		if (ServerManager::getInstance().findPlayerUsingName(loginRequestPacket.LoginNickname))
-		{
-			Packet::LoginResultPacket loginPacket(false, -1);
-			NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
-			return;
-		}
-		playerPtr->m_name = loginRequestPacket.LoginNickname;
-
-		// donghyun : test code
-		if (ServerManager::getInstance().getPlayerNum() == 1)
-		{
-			// donghyun : 자기 자신밖에 없을시 방 팜
-			ServerManager::getInstance().createRoom(m_fd, "5", "test");
-			std::cout << "player 1 login!" << '\n';
-		}
-		else
-		{
-			// donghyun : 테스트용으로 한 방에 집어 넣음
-			ServerManager::getInstance().joinRoom(2, m_fd);
-			// donghyun : 해당 방을 일정 주기마다 타이머 증가시키는 방 리스트에 추가
-			ServerManager::getInstance().addRoomTimerList(2);
-			// donghyun : 2명이 찼을 때 게임 시작 패킷 브로드캐스팅
-			ServerManager::getInstance().broadCastPacketInRoom(m_fd, 2, Packet::PacketID::GAMESTART);
-			ServerManager::getInstance().RunSpawner(2);
-			std::cout << "player 2 login!" << '\n';
-		}
-
-		Packet::LoginResultPacket loginPacket(true, m_infoMapIdx);
-		NetworkManager::getInstance().sendPacket(m_fd, loginPacket, loginPacket.packetSize);
+		ServerManager::getInstance().loginProcess(m_fd, packetChar);
 		break;
 	}
 	case Packet::PacketID::MAKEROOMREQUEST:

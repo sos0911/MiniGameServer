@@ -13,18 +13,20 @@ Room::Room()
 	curPlayTime = 0;
 }
 
-Room::Room(const std::string& in_roomName, int in_maxPartCnt, Player& in_player)
+Room::Room(int in_maxPartCnt, Player& in_player)
 {
 	// donghyun : 현재 시간 캐싱
 	std::string time_str = ServerManager::getInstance().getCurTime();
 	openTime = time_str;
-	roomName = in_roomName;
+	roomName = "room_" + std::to_string(ServerManager::getInstance().getLastRoomNum());
 	
 	roomPartInfo[in_player.m_name] = { &in_player, time_str };
 	
 	maxPartCnt = in_maxPartCnt;
 	// donghyun : 자기 자신
 	curPartCnt = 1;
+	ServerManager::getInstance().increaseLastRoomNum();
 	roomNum = ServerManager::getInstance().getLastRoomNum();
+
 	curPlayTime = 0;
 }
