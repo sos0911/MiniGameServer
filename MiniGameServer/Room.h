@@ -26,9 +26,6 @@ public:
 	// donghyun : 게임의 현재 마지막 등수
 	unsigned short lastRankNum = ServerProtocol::ROOM_MAXPARTCNT;
 
-	//// donghyun : 방마다의 spawn thread
-	//std::jthread m_timerThread;
-
 	Room();
 	Room(int in_maxPartCnt, Player& in_player);
 	// donghyun : 복사생성자는 디폴트로 둔다 (map insert 시 사용됨)

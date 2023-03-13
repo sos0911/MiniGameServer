@@ -40,24 +40,9 @@ private:
 	std::mutex m_mutex;
 
 public:
-
-	//// donghyun : ½Ì±ÛÅæ ±¸Çö
-	//static ServerManager& getInstance();
-
-	//ServerManager();
-	//virtual ~ServerManager() {}
-
-	void login(SOCKET clntfd, std::vector<std::string>& splitStrList);
 	void loginProcess(const SOCKET clntfd, const char* packetChar);
 	void gameStartProcess(const SOCKET clntfd, const int roomNum);
-	void showHelp(const SOCKET clntfd);
-	void showChatHelp(const SOCKET clntfd);
 	void createRoom(const SOCKET clntfd, const unsigned short maxCnt);
-	void sendWhisper(std::vector<std::string>& splitStrList, const SOCKET clntfd);
-	void showRoomInfo(int roomNum, const SOCKET clntfd);
-	void showRoomList(const SOCKET clntfd);
-	void showPlayerInfo(std::string& playerName, const SOCKET clntfd);
-	void showPlayerList(const SOCKET clntfd);
 
 	bool joinRoom(const int roomNum, const SOCKET clntfd);
 
@@ -68,8 +53,6 @@ public:
 	void increaseStartWaitingPlayerNum() { ++startWaitingPlayerNum; }
 
 	int getChatRoomNum(SOCKET clntfd);
-	void broadCastChatInRoom(SOCKET clntfd, int roomNum, std::string& msg);
-	void broadCastInRoom(int roomNum, std::string& msg);
 	void broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Packet::PacketID packetID);
 
 	template< class PacketType >
@@ -136,7 +119,6 @@ public:
 	bool addPlayer(Player& player);
 	int getPlayerNum();
 	int getLoginedPlayerNum();
-	int getNoRoomPlayerNum();
 	void addRoomTimerList(const int roomNum);
 
 	// donghyun : threads methods

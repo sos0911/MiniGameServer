@@ -133,11 +133,6 @@ void NetworkManager::execute()
 					continue;
 				}
 
-				if ( playerPtr->m_bufStartIdx >= PacketProtocol::BUF_MAXSIZE )
-				{
-					volatile int hello = 0;
-				}
-
 				const int strLen = recv(playerPtr->m_fd, playerPtr->m_buf + playerPtr->m_bufStartIdx, PacketProtocol::BUF_MAXSIZE - playerPtr->m_bufStartIdx, 0);
 
 				if (strLen == 0)
@@ -168,17 +163,12 @@ void NetworkManager::execute()
 							memcpy_s(&playerPtr->m_buf, PacketProtocol::PACKET_MAXSIZE, playerPtr->m_buf + packetSize, playerPtr->m_bufStartIdx - packetSize);
 							playerPtr->decomposePacket(packetChar);
 							playerPtr->m_bufStartIdx -= packetSize;
-
-							/*static std::vector< std::pair< Packet::PacketID, PacketSizeType > > packetSizeTypeDebugCont;
-							Packet::PacketID packetID = *(Packet::PacketID*)(packetChar + sizeof(unsigned short));
-							packetSizeTypeDebugCont.push_back({ packetID, packetSize });*/
 						}
 						else
 						{
 							break;
 						}
 					}
-
 				}
 			}
 		}

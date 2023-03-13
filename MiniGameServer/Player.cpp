@@ -42,7 +42,6 @@ void Player::decomposePacket(const char* packetChar)
 	// donghyun : 패킷 분해 후 struct 조립
 	unsigned short packetSize = *(unsigned short*)packetChar;
 	Packet::PacketID packetID = *(Packet::PacketID*)(packetChar + sizeof(unsigned short));
-	//std::memcpy(&packetID, &packetChar[1], sizeof(Packet::PacketID));
 	
 	switch (packetID)
 	{
@@ -61,15 +60,6 @@ void Player::decomposePacket(const char* packetChar)
 	}
 	case Packet::PacketID::UPDATE:
 	{
-		/*struct UpdatePacket
-		{
-			unsigned short packetSize;
-			PacketID packetID;
-			unsigned short playerIdx;
-			float posVec[3];
-			float rotVec[3];
-		};*/
-
 		Packet::UpdatePacket updatePacket = *(Packet::UpdatePacket*)(packetChar);
 		Player* playerPtr = ServerManager::getInstance().findPlayerUsingfd(m_fd);
 		if (!playerPtr)
@@ -102,11 +92,6 @@ void Player::decomposePacket(const char* packetChar)
 
 		float dirVec[3] = { 0.0f, 0.0f, 0.0f };
 		bool IsCollided = checkCollide(pmColliderRequestPacket.monsterPos, Packet::PacketID::PMCOLLIDERESULT);
-
-		if (IsCollided)
-		{
-			//std::cout << "P-M collided!" << '\n';
-		}
 
 		if (IsCollided)
 		{
@@ -198,10 +183,6 @@ void Player::decomposePacket(const char* packetChar)
 		//std::cout << "my pos : " << oppoPlayer->m_position[0] << " : " << oppoPlayer->m_position[1] << oppoPlayer->m_position[2] << '\n';
 
 		bool IsCollided = checkCollide(oppoPlayer->m_position, Packet::PacketID::PPCOLLIDERESULT);
-		if (IsCollided)
-		{
-			//std::cout << "P-P collided!" << '\n';
-		}
 
 		float dirVec[3] = { 0.0f, 0.0f, 0.0f };
 		float oppoDirVec[3] = { 0.0f, 0.0f, 0.0f };
@@ -219,16 +200,6 @@ void Player::decomposePacket(const char* packetChar)
 		{
 			oppoDirVec[i] = -dirVec[i];
 		}
-
-		/*Packet::PlayerCollideInfo playerCollideInfo_1(m_roomPlayerIdx, dirVec);
-		Packet::PlayerCollideInfo playerCollideInfo_2(oppoPlayer->m_roomPlayerIdx, oppoDirVec);
-
-		Packet::PlayerCollideInfo playerCollideInfoArr[2] = { playerCollideInfo_1, playerCollideInfo_2 };
-
-		Packet::PPCollideResultPacket ppCollideResultPacket(IsCollided, playerCollideInfoArr);
-
-		NetworkManager::getInstance().sendPacket(m_fd, ppCollideResultPacket, ppCollideResultPacket.packetSize);
-		NetworkManager::getInstance().sendPacket(oppoPlayer->m_fd, ppCollideResultPacket, ppCollideResultPacket.packetSize);*/
 
 		Packet::PPCollideResultPacket pCollideResultPacket(IsCollided, dirVec);
 		Packet::PPCollideResultPacket oCollideResultPacket(IsCollided, oppoDirVec);
