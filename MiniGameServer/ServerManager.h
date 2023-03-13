@@ -49,6 +49,7 @@ public:
 
 	void login(SOCKET clntfd, std::vector<std::string>& splitStrList);
 	void loginProcess(const SOCKET clntfd, const char* packetChar);
+	void gameStartProcess(const SOCKET clntfd, const int roomNum);
 	void showHelp(const SOCKET clntfd);
 	void showChatHelp(const SOCKET clntfd);
 	void createRoom(const SOCKET clntfd, const unsigned short maxCnt);
@@ -113,6 +114,16 @@ public:
 			}
 			break;
 		}
+		case Packet::PacketID::GAMEEND:
+		{
+			Packet::GameEndPacket gameEndPacket = *(Packet::GameEndPacket*)(&packet);
+			for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
+			{
+				auto playerInfo = iter->second.first;
+				NetworkManager::getInstance().sendPacket(playerInfo->m_fd, gameEndPacket, gameEndPacket.packetSize);
+			}
+			break;
+		}
 		default:
 		{
 			break;
@@ -139,6 +150,8 @@ public:
 	Player* findPlayerUsingfd(const SOCKET clntfd);
 	Player* findPlayerUsingName(const std::string& playerName);
 	Player* findPlayerUsingInfoMapIdx(const unsigned short infoMapIdx);
+
+	Room* findRoomUsingRoomNum(const int roomNum);
 
 	std::string getCurTime();
 };

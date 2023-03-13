@@ -8,11 +8,12 @@
 #include "ServerManager.h"
 #include "NetworkManager.h"
 #include "Packet.h"
+#include <chrono>
 
 Player::Player(char ip[], u_short port, SOCKET fd, std::string name) :
 	m_ip(ip), m_port(port), m_fd(fd), m_name(name)
 {
-	m_infoMapIdx = ServerManager::getInstance().getPlayerNum() + 1;
+	m_roomPlayerIdx = 0;
 }
 
 Player::Player(SOCKET clntFd) :
@@ -116,7 +117,7 @@ void Player::decomposePacket(const char* packetChar)
 			}
 		}
 
-		Packet::PMCollideResultPacket pmcollideResultPacket(m_infoMapIdx, IsCollided, dirVec);
+		Packet::PMCollideResultPacket pmcollideResultPacket(m_roomPlayerIdx, IsCollided, dirVec);
 		//std::cout << "PMCollideResultPacket send!" << '\n';
 		ServerManager::getInstance().broadCastPacketInRoom(m_roomNum, pmcollideResultPacket, Packet::PacketID::PMCOLLIDERESULT);
 
@@ -124,8 +125,61 @@ void Player::decomposePacket(const char* packetChar)
 		if (IsCollided)
 		{
 			m_heartCnt--;
-			Packet::HeartPacket heartPacket(m_infoMapIdx, m_heartCnt);
+			Packet::HeartPacket heartPacket(m_roomPlayerIdx, m_heartCnt);
 			ServerManager::getInstance().broadCastPacketInRoom(m_roomNum, heartPacket, Packet::PacketID::HEART);
+
+			Room* room = ServerManager::getInstance().findRoomUsingRoomNum(m_roomNum);
+			if (!room)
+			{
+				return;
+			}
+
+			// donghyun : HP가 0이 되었다면 해당 플레이어 생존 시간 표시
+			if (0 == m_heartCnt)
+			{
+				// Get the end time
+				auto endTime = std::chrono::high_resolution_clock::now();
+				// Calculate the elapsed time in milliseconds
+				auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - room->gameStartTime);
+				m_surviveTime = elapsedTime.count();
+				m_rank = room->lastRankNum;
+				room->lastRankNum--;
+			}
+
+			// donghyun : 해당 방 안 플레이어들의 hp가 모두 0이 되어서 게임종료 조건을 충족하는지 검사
+			bool gameEndFlag = true;
+			for (auto iter = room->roomPartInfo.begin(); iter != room->roomPartInfo.end(); ++iter)
+			{
+				Player* playerPtr = iter->second.first;
+				if (playerPtr->m_heartCnt > 0)
+				{
+					gameEndFlag = false;
+					break;
+				}
+			}
+			// donghyun : 만약 게임 종료 성립이라면 gameend 패킷 브로드캐스팅
+			if (gameEndFlag)
+			{
+				Packet::GameEndPacket gameEndPacket;
+				// donghyun : 1등부터 채워 넣음
+				unsigned short curRank = 1;
+				for (int i = 0; i < ServerProtocol::ROOM_MAXPARTCNT; ++i)
+				{
+					for (auto iter = room->roomPartInfo.begin(); iter != room->roomPartInfo.end(); ++iter)
+					{
+						Player* playerPtr = iter->second.first;
+						if (playerPtr->m_rank == curRank)
+						{
+							Packet::PlayerGameEndInfo playerGameEndInfo(playerPtr->m_roomPlayerIdx, playerPtr->m_rank, playerPtr->m_surviveTime);
+							gameEndPacket.playerGameEndInfoArr[curRank - 1] = playerGameEndInfo;
+							curRank++;
+							break;
+						}
+					}
+				}
+
+				ServerManager::getInstance().broadCastPacketInRoom(m_roomNum, gameEndPacket, Packet::PacketID::GAMEEND);
+			}
 		}
 
 		break;
@@ -166,8 +220,8 @@ void Player::decomposePacket(const char* packetChar)
 			oppoDirVec[i] = -dirVec[i];
 		}
 
-		/*Packet::PlayerCollideInfo playerCollideInfo_1(m_infoMapIdx, dirVec);
-		Packet::PlayerCollideInfo playerCollideInfo_2(oppoPlayer->m_infoMapIdx, oppoDirVec);
+		/*Packet::PlayerCollideInfo playerCollideInfo_1(m_roomPlayerIdx, dirVec);
+		Packet::PlayerCollideInfo playerCollideInfo_2(oppoPlayer->m_roomPlayerIdx, oppoDirVec);
 
 		Packet::PlayerCollideInfo playerCollideInfoArr[2] = { playerCollideInfo_1, playerCollideInfo_2 };
 

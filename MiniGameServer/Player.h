@@ -19,10 +19,14 @@ public:
 	float m_position[3] = { 0.0f };
 	float m_rotation[3] = { 0.0f };
 
-	// donghyun : 각 방에서의 player idx
-	unsigned short m_infoMapIdx = -1;
+	// donghyun : 각 방에서의 player idx. 0이면 방에 들어가지 않은 상태
+	unsigned short m_roomPlayerIdx = 0;
 	// donghyun : hp 상태
 	unsigned short m_heartCnt = 3;
+	// donghyun : 게임 등수
+	unsigned short m_rank = 0;
+	// donghyun : 생존 시간
+	long long m_surviveTime = 0;
 
 	//donghyun : 맨 처음 클라 소켓 연결 요청 시 이름이 없을 때 사용하는 생성자
 	Player(char ip[], u_short port, SOCKET fd, std::string name);

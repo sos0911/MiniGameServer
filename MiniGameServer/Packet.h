@@ -31,7 +31,7 @@ namespace ServerProtocol
 	// donghyun : 언리얼 기준 height (y축?)
 	constexpr float MONSTER_BOX_COLLIDER_HEIGHT = 120.0f;
 
-	constexpr float ROOM_MAXPARTCNT = 2;
+	constexpr unsigned short ROOM_MAXPARTCNT = 2;
 }
 #pragma pack(push,1)
 namespace Packet
@@ -49,6 +49,7 @@ namespace Packet
 		PMCOLLIDERESULT,
 		PPCOLLIDERESULT,
 		HEART,
+		GAMEEND,
 		// client -> server
 		UPDATE,
 		LOGINREQUEST,
@@ -150,6 +151,23 @@ namespace Packet
 		PacketID packetID;
 		unsigned short timeSecond;
 		TimerPacket(unsigned short in_timeSecond);
+	};
+
+	// donghyun : gameendPacket에 들어가는 playerGameEndInfo
+	struct PlayerGameEndInfo
+	{
+		unsigned short playerIdx;
+		unsigned short rank;
+		long long survivedTime;
+		PlayerGameEndInfo() = default;
+		PlayerGameEndInfo(const unsigned short in_playerIdx, const unsigned short in_rank, const long long in_survivedTime);
+	};
+
+	struct GameEndPacket
+	{
+		unsigned short packetSize = sizeof(GameEndPacket);
+		PacketID packetID = Packet::PacketID::GAMEEND;
+		PlayerGameEndInfo playerGameEndInfoArr[ServerProtocol::ROOM_MAXPARTCNT];
 	};
 
 	// donghyun : 플-투 충돌 결과 패킷

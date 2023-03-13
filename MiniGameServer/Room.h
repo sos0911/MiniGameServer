@@ -4,6 +4,8 @@
 #include <chrono>
 #include <iomanip>
 #include <map>
+#include <chrono>
+#include "Packet.h"
 
 class Player;
 
@@ -16,9 +18,13 @@ public:
 	std::map<std::string, std::pair<Player*, std::string>> roomPartInfo;
 
 	int maxPartCnt, curPartCnt, roomNum;
-	std::chrono::steady_clock::time_point gameStartTime;
 	// donghyun : 현재 게임이 진행된 시간 (초 단위)
 	unsigned short curPlayTime;
+
+	// donghyun : 게임이 시작된 시간
+	std::chrono::steady_clock::time_point gameStartTime;
+	// donghyun : 게임의 현재 마지막 등수
+	unsigned short lastRankNum = ServerProtocol::ROOM_MAXPARTCNT;
 
 	//// donghyun : 방마다의 spawn thread
 	//std::jthread m_timerThread;

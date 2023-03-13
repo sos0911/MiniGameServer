@@ -5,6 +5,7 @@
 #include <iostream>
 #include <format>
 #include <ctime>
+#include <chrono>
 
 ServerManager::ServerManager()
 {
@@ -42,14 +43,14 @@ void ServerManager::loginProcess(const SOCKET clntfd, const char* packetChar)
 {
 	Packet::LoginRequestPacket loginRequestPacket = *(Packet::LoginRequestPacket*)(packetChar);
 
-	Player* playerPtr = ServerManager::getInstance().findPlayerUsingfd(clntfd);
+	Player* playerPtr = findPlayerUsingfd(clntfd);
 	if (!playerPtr)
 	{
 		Packet::LoginResultPacket loginPacket(false, -1);
 		NetworkManager::getInstance().sendPacket(clntfd, loginPacket, loginPacket.packetSize);
 		return;
 	}
-	if (ServerManager::getInstance().findPlayerUsingName(loginRequestPacket.LoginNickname))
+	if (findPlayerUsingName(loginRequestPacket.LoginNickname))
 	{
 		Packet::LoginResultPacket loginPacket(false, -1);
 		NetworkManager::getInstance().sendPacket(clntfd, loginPacket, loginPacket.packetSize);
@@ -57,24 +58,20 @@ void ServerManager::loginProcess(const SOCKET clntfd, const char* packetChar)
 	}
 	playerPtr->m_name = loginRequestPacket.LoginNickname;
 
-	Packet::LoginResultPacket loginPacket(true, playerPtr->m_infoMapIdx);
+	Packet::LoginResultPacket loginPacket(true, playerPtr->m_roomPlayerIdx);
 	NetworkManager::getInstance().sendPacket(clntfd, loginPacket, loginPacket.packetSize);
 
 	// donghyun : 방에 없는 3명이 모일 때마다 묶어서 게임 시작하게끔 함
 	if (playerPtr->m_roomNum == -1)
 	{
-		bool joinRoomResult = ServerManager::getInstance().joinRoom(lastRoomNum, clntfd);
+		bool joinRoomResult = joinRoom(lastRoomNum, clntfd);
 		if (joinRoomResult)
 		{
 			// donghyun : 아직 마지막 방에 들어갈 수 있었음
 			// donghyun : 3명 다 들어왔는지 체크하고 맞으면 게임 시작 처리
 			if (roomList[lastRoomNum].curPartCnt == ServerProtocol::ROOM_MAXPARTCNT)
 			{
-				// donghyun : 해당 방을 일정 주기마다 타이머 증가시키는 방 리스트에 추가
-				addRoomTimerList(lastRoomNum);
-				// donghyun : 2명이 찼을 때 게임 시작 패킷 브로드캐스팅
-				broadCastPacketInRoom(clntfd, lastRoomNum, Packet::PacketID::GAMESTART);
-				RunSpawner(lastRoomNum);
+				gameStartProcess(clntfd, lastRoomNum);
 			}
 		}
 		else
@@ -124,6 +121,24 @@ void ServerManager::showChatHelp(const SOCKET clntfd)
 	//NetworkManager::getInstance().sendMsg(clntfd, msg);
 }
 
+void ServerManager::gameStartProcess(const SOCKET clntfd, const int roomNum)
+{
+	// donghyun : 해당 방을 일정 주기마다 타이머 증가시키는 방 리스트에 추가
+	addRoomTimerList(lastRoomNum);
+
+	if (roomList.find(roomNum) == roomList.end())
+	{
+		return;
+	}
+	Room& room = roomList[roomNum];
+	// donghyun : 게임 시작 시각 저장
+	room.gameStartTime = std::chrono::high_resolution_clock::now();
+
+	// donghyun : 2명이 찼을 때 게임 시작 패킷 브로드캐스팅
+	broadCastPacketInRoom(clntfd, lastRoomNum, Packet::PacketID::GAMESTART);
+	RunSpawner(lastRoomNum);
+}
+
 void ServerManager::createRoom(const SOCKET clntfd, const unsigned short maxCnt)
 {
 	Player* playerPtr = findPlayerUsingfd(clntfd);
@@ -133,7 +148,7 @@ void ServerManager::createRoom(const SOCKET clntfd, const unsigned short maxCnt)
 		roomList[room.roomNum] = room;
 		// donghyun : 방장에게도 속한 방이 있다고 표시해주기
 		playerPtr->m_roomNum = room.roomNum;
-		playerPtr->m_infoMapIdx = 1;
+		playerPtr->m_roomPlayerIdx = 1;
 
 		//std::string msg = std::format("** 대화방이 개설되었습니다.\n\r** {}님이 들어오셨습니다. (현재인원 {} / {})\n\r", playerPtr->m_name, room.curPartCnt, room.maxPartCnt);
 		//NetworkManager::getInstance().sendMsg(clntfd, msg);
@@ -291,7 +306,7 @@ bool ServerManager::joinRoom(const int roomNum, const SOCKET clntfd)
 	++room.curPartCnt;
 
 	playerPtr->m_roomNum = room.roomNum;
-	playerPtr->m_infoMapIdx = room.curPartCnt;
+	playerPtr->m_roomPlayerIdx = room.curPartCnt;
 	return true;
 }
 
@@ -377,8 +392,8 @@ void ServerManager::broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Pack
 		}
 
 		// donghyun : playpacket 제작
-		int playerIdx = playerPtr->m_infoMapIdx;
-		Packet::PlayPacket playPacket(playerPtr->m_infoMapIdx);
+		int playerIdx = playerPtr->m_roomPlayerIdx;
+		Packet::PlayPacket playPacket(playerPtr->m_roomPlayerIdx);
 		for (int i = 0; i < 3; i++)
 		{
 			playPacket.posVec[i] = playerPtr->m_position[i];
@@ -405,8 +420,8 @@ void ServerManager::broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Pack
 		{
 			// donghyun : 자기 자신도 브로드캐스팅함
 			auto playerPtr = iter->second.first;
-			//Packet::PlayerInfo playerInfo(playerPtr->m_infoMapIdx, playerPtr->m_name.c_str(), playerPtr->m_position, playerPtr->m_rotation);
-			Packet::PlayerInfo playerInfo(playerPtr->m_infoMapIdx, playerPtr->m_name.c_str(), ServerProtocol::PLAYER_INITPOS[playerPositionIdx], playerPtr->m_rotation);
+			//Packet::PlayerInfo playerInfo(playerPtr->m_roomPlayerIdx, playerPtr->m_name.c_str(), playerPtr->m_position, playerPtr->m_rotation);
+			Packet::PlayerInfo playerInfo(playerPtr->m_roomPlayerIdx, playerPtr->m_name.c_str(), ServerProtocol::PLAYER_INITPOS[playerPositionIdx], playerPtr->m_rotation);
 			for (int i = 0; i < 3; ++i)
 			{
 				playerPtr->m_position[i] = ServerProtocol::PLAYER_INITPOS[playerPositionIdx][i];
@@ -651,6 +666,11 @@ void ServerManager::RunSpawner(const int roomNum)
 	m_spawnThreadSet.insert(std::move(spawnThread));
 }
 
+Room* ServerManager::findRoomUsingRoomNum(const int roomNum)
+{
+	return (roomList.find(roomNum) == roomList.end() ? nullptr : &(roomList[roomNum]));
+}
+
 // donghyun : 만약 못찾았을 때는 nullptr 반환
 Player* ServerManager::findPlayerUsingfd(const SOCKET clntfd)
 {
@@ -677,7 +697,7 @@ Player* ServerManager::findPlayerUsingInfoMapIdx(const unsigned short infoMapIdx
 	Player* playerPtr = nullptr;
 	for (auto iter = playerList.begin(); iter != playerList.end(); ++iter)
 	{
-		if (iter->second.m_infoMapIdx == infoMapIdx)
+		if (iter->second.m_roomPlayerIdx == infoMapIdx)
 		{
 			playerPtr = &(iter->second);
 			break;

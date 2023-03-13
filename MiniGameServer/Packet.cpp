@@ -140,6 +140,8 @@ namespace Packet
 		heartCnt = in_heartCnt;
 	}
 
+	PlayerGameEndInfo::PlayerGameEndInfo(const unsigned short in_playerIdx, const unsigned short in_rank, const long long in_survivedTime) : playerIdx(in_playerIdx), rank(in_rank), survivedTime(in_survivedTime) {};
+
 	//////////
 	// 클라 //
 	//////////
