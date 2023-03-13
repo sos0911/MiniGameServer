@@ -69,6 +69,7 @@ void Player::decomposePacket(const char* packetChar)
 		{
 			// donghyun : 자기 자신밖에 없을시 방 팜
 			ServerManager::getInstance().createRoom(m_fd, "5", "test");
+			std::cout << "player 1 login!" << '\n';
 		}
 		else
 		{
@@ -79,6 +80,7 @@ void Player::decomposePacket(const char* packetChar)
 			// donghyun : 2명이 찼을 때 게임 시작 패킷 브로드캐스팅
 			ServerManager::getInstance().broadCastPacketInRoom(m_fd, 2, Packet::PacketID::GAMESTART);
 			ServerManager::getInstance().RunSpawner(2);
+			std::cout << "player 2 login!" << '\n';
 		}
 
 		Packet::LoginResultPacket loginPacket(true, m_infoMapIdx);

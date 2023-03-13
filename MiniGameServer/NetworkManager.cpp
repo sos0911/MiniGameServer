@@ -152,14 +152,12 @@ void NetworkManager::execute()
 
 					while(1)
 					{
-						using PacketSizeType = unsigned short;
-
-						if (playerPtr->m_bufStartIdx < sizeof(PacketSizeType))
+						if (playerPtr->m_bufStartIdx < sizeof(unsigned short))
 						{
 							break;
 						}
 
-						const auto packetSize = *(PacketSizeType*)playerPtr->m_buf;
+						const unsigned short packetSize = *(unsigned short*)(playerPtr->m_buf);
 
 						if (playerPtr->m_bufStartIdx >= packetSize)
 						{
