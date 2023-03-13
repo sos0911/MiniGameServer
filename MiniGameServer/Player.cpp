@@ -135,7 +135,7 @@ void Player::decomposePacket(const char* packetChar)
 		//std::cout << "monster position : " << pmColliderRequestPacket.monsterPos[0] << " : " << pmColliderRequestPacket.monsterPos[1] << " : " << pmColliderRequestPacket.monsterPos[2] << '\n';
 
 		float dirVec[3] = { 0.0f, 0.0f, 0.0f };
-		bool IsCollided = checkCollide(pmColliderRequestPacket.monsterPos);
+		bool IsCollided = checkCollide(pmColliderRequestPacket.monsterPos, Packet::PacketID::PMCOLLIDERESULT);
 
 		if (IsCollided)
 		{
@@ -178,7 +178,7 @@ void Player::decomposePacket(const char* packetChar)
 		//std::cout << "oppo pos : "<< oppoPlayer->m_position[0] << " : " << oppoPlayer->m_position[1] << oppoPlayer->m_position[2] << '\n';
 		//std::cout << "my pos : " << oppoPlayer->m_position[0] << " : " << oppoPlayer->m_position[1] << oppoPlayer->m_position[2] << '\n';
 
-		bool IsCollided = checkCollide(oppoPlayer->m_position);
+		bool IsCollided = checkCollide(oppoPlayer->m_position, Packet::PacketID::PPCOLLIDERESULT);
 		if (IsCollided)
 		{
 			//std::cout << "P-P collided!" << '\n';
@@ -226,14 +226,48 @@ void Player::decomposePacket(const char* packetChar)
 }
 
 // donghyun : true¸é Ãæµ¹
-bool Player::checkCollide(const float* oppoPosVec)
+bool Player::checkCollide(const float* oppoPosVec, Packet::PacketID packetId)
 {
-	float sqaureDist = 0.0f;
-	for (int i = 0; i < 3; ++i)
+	switch (packetId)
 	{
-		sqaureDist += pow(m_position[i] - oppoPosVec[i], 2);
+	case Packet::PacketID::PMCOLLIDERESULT:
+	{
+		float closestX = m_position[0];
+		float closestY = m_position[1];
+
+		float rectLowerLeftX = oppoPosVec[0] - ServerProtocol::MONSTER_BOX_COLLIDER_WIDTH / 2.0f;
+		float rectLowerLeftY = oppoPosVec[1] - ServerProtocol::MONSTER_BOX_COLLIDER_HEIGHT / 2.0f;
+
+		if (m_position[0] < rectLowerLeftX) {
+			closestX = rectLowerLeftX;
+		}
+		else if (m_position[0] > rectLowerLeftX + ServerProtocol::MONSTER_BOX_COLLIDER_WIDTH) {
+			closestX = rectLowerLeftX + ServerProtocol::MONSTER_BOX_COLLIDER_WIDTH;
+		}
+
+		if (m_position[1] < rectLowerLeftY) {
+			closestY = rectLowerLeftY;
+		}
+		else if (m_position[1] > rectLowerLeftY + ServerProtocol::MONSTER_BOX_COLLIDER_HEIGHT) {
+			closestY = rectLowerLeftY + ServerProtocol::MONSTER_BOX_COLLIDER_HEIGHT;
+		}
+		return pow(m_position[0] - closestX, 2) + pow(m_position[1] - closestY, 2) < pow(ServerProtocol::PLAYER_COLLIDER_RADIUS, 2);
 	}
-	float testValue = pow((ServerProtocol::PLAYER_COLLIDER_RADIUS * 2.0f), 2);
-	return testValue >= sqaureDist;
+	case Packet::PacketID::PPCOLLIDERESULT:
+	{
+		float sqaureDist = 0.0f;
+		for (int i = 0; i < 3; ++i)
+		{
+			sqaureDist += pow(m_position[i] - oppoPosVec[i], 2);
+		}
+		float testValue = pow((ServerProtocol::PLAYER_COLLIDER_RADIUS * 2.0f), 2);
+		return testValue >= sqaureDist;
+	}
+	default:
+	{
+		// donghyun : error -> return false
+		return false;
+	}
+	}
 }
 

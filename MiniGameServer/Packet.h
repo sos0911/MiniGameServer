@@ -26,6 +26,10 @@ namespace ServerProtocol
 										   {-100.0f, 100.0f, 140.0f},
 										   {0.0f, 0.0f, 140.0f} };
 	constexpr float PLAYER_COLLIDER_RADIUS = 75.0f;
+	// donghyun : 언리얼 기준 width (x축?)
+	constexpr float MONSTER_BOX_COLLIDER_WIDTH = 75.0f;
+	// donghyun : 언리얼 기준 height (y축?)
+	constexpr float MONSTER_BOX_COLLIDER_HEIGHT = 75.0f;
 }
 #pragma pack(push,1)
 namespace Packet
@@ -226,8 +230,8 @@ namespace Packet
 	struct PMColliderRequestPacket
 	{
 		const unsigned short packetSize    = sizeof( PMColliderRequestPacket );
-		const PacketID       packetID      = PacketID::PMCOLLIDEREQUEST;
-		      float          monsterPos[3];
+		      const PacketID packetID      = PacketID::PMCOLLIDEREQUEST;
+	                   float monsterPos[3];
 	};
 
 	struct PPColliderRequestPacket
