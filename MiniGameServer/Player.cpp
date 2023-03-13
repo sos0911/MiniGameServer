@@ -146,19 +146,19 @@ void Player::decomposePacket(const char* packetChar)
 				room->lastRankNum--;
 			}
 
-			// donghyun : 해당 방 안 플레이어들의 hp가 모두 0이 되어서 게임종료 조건을 충족하는지 검사
-			bool gameEndFlag = true;
+			// donghyun : 해당 방 안 플레이어들의 hp가 한 명을 제외하고 모두 0이 되어서 게임종료 조건을 충족하는지 검사
+			unsigned short survivedPlayerCnt = 0;
 			for (auto iter = room->roomPartInfo.begin(); iter != room->roomPartInfo.end(); ++iter)
 			{
 				Player* playerPtr = iter->second.first;
 				if (playerPtr->m_heartCnt > 0)
 				{
-					gameEndFlag = false;
-					break;
+					survivedPlayerCnt++;
 				}
 			}
+
 			// donghyun : 만약 게임 종료 성립이라면 gameend 패킷 브로드캐스팅
-			if (gameEndFlag)
+			if (1 == survivedPlayerCnt)
 			{
 				Packet::GameEndPacket gameEndPacket;
 				// donghyun : 1등부터 채워 넣음
