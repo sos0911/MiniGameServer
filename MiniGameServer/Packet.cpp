@@ -58,10 +58,10 @@ namespace Packet
 		return sizeof(unsigned short) + PacketProtocol::NICKNAME_MAXSIZE + sizeof(float) * 6;
 	}
 
-	GameStartPacket::GameStartPacket(const PlayerInfo& in_playerInfo)
+	GameReadyPacket::GameReadyPacket(const PlayerInfo& in_playerInfo)
 	{
 		packetSize = sizeof(unsigned short) + sizeof(PacketID) + PlayerInfo::getPlayerInfoByteSize();
-		packetID = PacketID::GAMESTART;
+		packetID = PacketID::GAMEREADY;
 		playerInfo = in_playerInfo;
 	}
 

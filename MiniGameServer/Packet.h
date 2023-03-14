@@ -32,6 +32,7 @@ namespace ServerProtocol
 	constexpr float MONSTER_BOX_COLLIDER_HEIGHT = 120.0f;
 
 	constexpr unsigned short ROOM_MAXPARTCNT = 2;
+	constexpr short ROOM_TIMER_STARTTIME = -3;
 }
 #pragma pack(push,1)
 namespace Packet
@@ -41,6 +42,7 @@ namespace Packet
 		// server -> client
 		PLAY,
 		SPAWN,
+		GAMEREADY,
 		GAMESTART,
 		LOGINRESULT,
 		MAKEROOMRESULT,
@@ -95,7 +97,7 @@ namespace Packet
 		SpawnPacket(bool in_IsHorizontal, unsigned short in_lineIdx, bool in_directionFlag);
 	};
 
-	// donghyun : GameStartPacket 내에 포함되는 개별 플레이어 정보 구조체
+	// donghyun : GameReadyPacket 내에 포함되는 개별 플레이어 정보 구조체
 	struct PlayerInfo
 	{
 		unsigned short playerIdx;
@@ -109,13 +111,20 @@ namespace Packet
 		static unsigned short getPlayerInfoByteSize();
 	};
 
-	// donghyun : 게임 시작 전 각 플레이어의 정보를 알려주는 패킷
-	struct GameStartPacket
+	// donghyun : 모든 플레이어 참가 시 게임 시작 전 각 플레이어의 정보를 알려주는 패킷
+	struct GameReadyPacket
 	{
 		unsigned short packetSize;
 		PacketID packetID;
 		PlayerInfo playerInfo;
-		GameStartPacket(const PlayerInfo& in_playerInfo);
+		GameReadyPacket(const PlayerInfo& in_playerInfo);
+	};
+
+	// donghyun : 게임 시작을 알려주는 패킷
+	struct GameStartPacket
+	{
+		unsigned short packetSize = sizeof(GameStartPacket);
+		PacketID packetID = Packet::PacketID::GAMESTART;
 	};
 
 	struct LoginResultPacket

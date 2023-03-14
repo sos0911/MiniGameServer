@@ -43,7 +43,10 @@ void ServerManager::loginProcess(const SOCKET clntfd, const char* packetChar)
 			// donghyun : 3명 다 들어왔는지 체크하고 맞으면 게임 시작 처리
 			if (roomList[lastRoomNum].curPartCnt == ServerProtocol::ROOM_MAXPARTCNT)
 			{
-				gameStartProcess(clntfd, lastRoomNum);
+				// donghyun : 해당 방을 일정 주기마다 타이머 증가시키는 방 리스트에 추가
+				addRoomTimerList(lastRoomNum);
+				std::cout << " gameReady logic!" << '\n';
+				gameReadyProcess(clntfd, lastRoomNum);
 			}
 		}
 		else
@@ -55,11 +58,20 @@ void ServerManager::loginProcess(const SOCKET clntfd, const char* packetChar)
 	}
 }
 
+void ServerManager::gameReadyProcess(const SOCKET clntfd, const int roomNum)
+{
+	if (roomList.find(roomNum) == roomList.end())
+	{
+		return;
+	}
+	Room& room = roomList[roomNum];
+
+	// donghyun : 2명이 찼을 때 게임 시작 패킷 브로드캐스팅
+	broadCastPacketInRoom(clntfd, lastRoomNum, Packet::PacketID::GAMEREADY);
+}
+
 void ServerManager::gameStartProcess(const SOCKET clntfd, const int roomNum)
 {
-	// donghyun : 해당 방을 일정 주기마다 타이머 증가시키는 방 리스트에 추가
-	addRoomTimerList(lastRoomNum);
-
 	if (roomList.find(roomNum) == roomList.end())
 	{
 		return;
@@ -168,9 +180,9 @@ void ServerManager::broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Pack
 		}
 		break;
 	}
-	case Packet::PacketID::GAMESTART:
+	case Packet::PacketID::GAMEREADY:
 	{
-		// donghyun : GameStartPacket 패킷 제작
+		// donghyun : GameReadyPacket 패킷 제작
 		int playerPositionIdx = 0;
 		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
 		{
@@ -184,19 +196,31 @@ void ServerManager::broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Pack
 			}
 			playerPositionIdx++;
 
-			Packet::GameStartPacket gameStartPacket(playerInfo);
+			Packet::GameReadyPacket GameReadyPacket(playerInfo);
 			// donghyun : 모든 클라에게 브로드캐스팅
 			for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
 			{
 				// donghyun : 자기 자신도 브로드캐스팅함
 				auto& playerInfo = iter->second;
-				NetworkManager::getInstance().sendPacket(playerInfo.first->m_fd, gameStartPacket, gameStartPacket.packetSize);
+				NetworkManager::getInstance().sendPacket(playerInfo.first->m_fd, GameReadyPacket, GameReadyPacket.packetSize);
 			}
 		}
 		break;
 	}
 	case Packet::PacketID::SPAWN:
 	{
+		break;
+	}
+	case Packet::PacketID::GAMESTART:
+	{
+		// donghyun : GameStartPacket 패킷 제작
+		Packet::GameStartPacket gameStartPacket;
+		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
+		{
+			// donghyun : 자기 자신도 브로드캐스팅함
+			auto playerPtr = iter->second.first;
+			NetworkManager::getInstance().sendPacket(playerPtr->m_fd, gameStartPacket, gameStartPacket.packetSize);
+		}
 		break;
 	}
 	default:
@@ -272,6 +296,28 @@ void ServerManager::addRoomTimerList(const int roomNum)
 	updateRoomTimerList.insert(roomNum);
 }
 
+void ServerManager::deleteRoomTimerList(const int roomNum)
+{
+	if (updateRoomTimerList.find(roomNum) == updateRoomTimerList.end())
+	{
+		return;
+	}
+	updateRoomTimerList.erase(roomNum);
+}
+
+void ServerManager::stopSpawnThread(const int roomNum)
+{
+	if (roomList.find(roomNum) == roomList.end())
+	{
+		return;
+	}
+	if (m_spawnThreadSet.find(roomNum) == m_spawnThreadSet.end())
+	{
+		return;
+	}
+	m_spawnThreadSet[roomNum].request_stop();
+}
+
 void ServerManager::RunTimer()
 {
 	//타이머 만들기
@@ -308,24 +354,25 @@ void ServerManager::UpdateRoomTimer()
 		// donghyun : 타이머 패킷 만들어서 전송
 		Packet::TimerPacket timerPacket(room.curPlayTime);
 		std::cout << "current time : " << room.curPlayTime << '\n';
-		//// donghyun : 스폰 패킷 만들어서 전송 (방향, idx 등은 모두 랜덤)
-		//srand(time(NULL)); // 시드(seed) 값을 현재 시간으로 설정
-		//int rand_num = -1;
 
-		//rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
-		//bool IsHorizontal = rand_num % 2 == 0 ? true : false;
-		//rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
-		//unsigned short lineIdx = rand_num % ServerProtocol::GAMEMAP_SIZE + 1;
-		//rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
-		//bool directionFlag = rand_num % 2 == 0 ? true : false;
-
-		//Packet::SpawnPacket spawnPacket(IsHorizontal, lineIdx, directionFlag);
+		if (0 == room.curPlayTime)
+		{
+			std::cout << " gamestart logic!" << '\n';
+			// donghyun : 그냥 방 안에 있는 아무나 인자로 넘김 (땜빵용)
+			for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
+			{
+				Player* playerPtr = iter->second.first;
+				SOCKET playerSoc = playerPtr->m_fd;
+				gameStartProcess(playerSoc, roomNum);
+				break;
+			}
+		}
 
 		// 각 방의 플레이어들에게 타이머 전송
 		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
 		{
 			auto playerPtr = iter->second.first;
-	
+
 			NetworkManager::getInstance().sendPacket(playerPtr->m_fd, timerPacket, timerPacket.packetSize);
 			//NetworkManager::getInstance().sendPacket(playerPtr->m_fd, spawnPacket, spawnPacket.packetSize);
 		}
@@ -400,7 +447,7 @@ void ServerManager::RunSpawner(const int roomNum)
 				}
 			});
 	
-	m_spawnThreadSet.insert(std::move(spawnThread));
+	m_spawnThreadSet.insert({ roomNum, std::move(spawnThread) });
 }
 
 Room* ServerManager::findRoomUsingRoomNum(const int roomNum)

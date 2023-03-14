@@ -36,11 +36,13 @@ private:
 
 	// donghyun : thread & lock mutex
 	std::jthread m_timerThread;
-	std::set< std::jthread, JthreadLess> m_spawnThreadSet;
+	//std::map< int, std::jthread, JthreadLess> m_spawnThreadSet;
+	std::map< int, std::jthread> m_spawnThreadSet;
 	std::mutex m_mutex;
 
 public:
 	void loginProcess(const SOCKET clntfd, const char* packetChar);
+	void gameReadyProcess(const SOCKET clntfd, const int roomNum);
 	void gameStartProcess(const SOCKET clntfd, const int roomNum);
 	void createRoom(const SOCKET clntfd, const unsigned short maxCnt);
 
@@ -120,6 +122,8 @@ public:
 	int getPlayerNum();
 	int getLoginedPlayerNum();
 	void addRoomTimerList(const int roomNum);
+	void deleteRoomTimerList(const int roomNum);
+	void stopSpawnThread(const int roomNum);
 
 	// donghyun : threads methods
 	void RunTimer();
@@ -127,7 +131,7 @@ public:
 	void RunSpawner(const int roomNum);
 
 	//// packet generate method
-	//Packet::GameStartPacket& makeGameStartPacket();
+	//Packet::GameReadyPacket& makeGameReadyPacket();
 
 	Player* findPlayerUsingfd(const SOCKET clntfd);
 	Player* findPlayerUsingName(const std::string& playerName);

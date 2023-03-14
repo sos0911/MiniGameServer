@@ -187,6 +187,9 @@ void Player::decomposePacket(const char* packetChar)
 						}
 					}
 				}
+				// donghyun : timer thread, spawn thread Áß´Ü
+				ServerManager::getInstance().deleteRoomTimerList(m_roomNum);
+				ServerManager::getInstance().stopSpawnThread(m_roomNum);
 
 				ServerManager::getInstance().broadCastPacketInRoom(m_roomNum, gameEndPacket, Packet::PacketID::GAMEEND);
 			}

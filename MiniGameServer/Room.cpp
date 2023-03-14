@@ -14,7 +14,7 @@ Room::Room()
 	maxPartCnt = -1;
 	curPartCnt = 0;
 	roomNum = -1;
-	curPlayTime = 0;
+	curPlayTime = ServerProtocol::ROOM_TIMER_STARTTIME;
 }
 
 Room::Room(int in_maxPartCnt, Player& in_player)
@@ -32,5 +32,5 @@ Room::Room(int in_maxPartCnt, Player& in_player)
 	ServerManager::getInstance().increaseLastRoomNum();
 	roomNum = ServerManager::getInstance().getLastRoomNum();
 
-	curPlayTime = 0;
+	curPlayTime = ServerProtocol::ROOM_TIMER_STARTTIME;
 }
