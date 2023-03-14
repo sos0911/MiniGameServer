@@ -209,15 +209,17 @@ void ServerManager::broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Pack
 void ServerManager::quitPlayer(const SOCKET clntfd)
 {
 	Player* playerPtr = findPlayerUsingfd(clntfd);
-	if (playerPtr)
+	if (!playerPtr)
 	{
-		if (playerPtr->m_roomNum > 0)
-		{
-			quitRoom(playerPtr->m_roomNum, playerPtr);
-		}
-		// donghyun : 플레이어 set에서도 빼기
-		playerList.erase(playerPtr->m_fd);
+		return;
 	}
+
+	if (playerPtr->m_roomNum > 0)
+	{
+		quitRoom(playerPtr->m_roomNum, playerPtr);
+	}
+	// donghyun : 플레이어 set에서도 빼기
+	playerList.erase(playerPtr->m_fd);
 	NetworkManager::getInstance().closeClient(clntfd);
 }
 
