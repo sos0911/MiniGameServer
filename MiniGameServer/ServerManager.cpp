@@ -244,7 +244,14 @@ void ServerManager::broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Pack
 		Room& room = roomList[playerPtr->m_roomNum];
 
 		Packet::RoomInfoPacket roomInfoPacket(room.curPartCnt);
-		NetworkManager::getInstance().sendPacket(playerPtr->m_fd, roomInfoPacket, roomInfoPacket.packetSize);
+		// donghyun : 모든 클라에게 브로드캐스팅
+		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
+		{
+			// donghyun : 자기 자신도 브로드캐스팅함
+			auto& playerInfo = iter->second;
+			NetworkManager::getInstance().sendPacket(playerInfo.first->m_fd, roomInfoPacket, roomInfoPacket.packetSize);
+		}
+
 		break;
 	}
 	default:
