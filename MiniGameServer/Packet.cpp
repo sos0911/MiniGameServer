@@ -113,6 +113,8 @@ namespace Packet
 
 	PlayerGameEndInfo::PlayerGameEndInfo(const unsigned short in_playerIdx, const unsigned short in_rank, const long long in_survivedTime) : playerIdx(in_playerIdx), rank(in_rank), survivedTime(in_survivedTime) {};
 
+	RoomInfoPacket::RoomInfoPacket(const unsigned short in_roomPartCnt) : roomPartCnt(in_roomPartCnt) {}
+
 	//////////
 	// 클라 //
 	//////////

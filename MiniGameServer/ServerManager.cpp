@@ -37,8 +37,12 @@ void ServerManager::loginProcess(const SOCKET clntfd, const char* packetChar)
 	if (playerPtr->m_roomNum == -1)
 	{
 		bool joinRoomResult = joinRoom(lastRoomNum, clntfd);
+
 		if (joinRoomResult)
 		{
+			// donghyun : 현재 방 인원 패킷 전송
+			ServerManager::getInstance().broadCastPacketInRoom(clntfd, playerPtr->m_roomNum, Packet::PacketID::ROOMINFO);
+
 			// donghyun : 아직 마지막 방에 들어갈 수 있었음
 			// donghyun : 3명 다 들어왔는지 체크하고 맞으면 게임 시작 처리
 			if (roomList[lastRoomNum].curPartCnt == ServerProtocol::ROOM_MAXPARTCNT)
@@ -54,6 +58,9 @@ void ServerManager::loginProcess(const SOCKET clntfd, const char* packetChar)
 			// donghyun : 마지막 방이 풀방이라 하나 만들어야 함
 			// donghyun : 물론 nullptr일 경우 있지만 고려하지 않음
 			ServerManager::getInstance().createRoom(clntfd, ServerProtocol::ROOM_MAXPARTCNT);
+
+			// donghyun : 현재 방 인원 패킷 전송
+			ServerManager::getInstance().broadCastPacketInRoom(clntfd, playerPtr->m_roomNum, Packet::PacketID::ROOMINFO);
 		}
 	}
 }
@@ -221,6 +228,23 @@ void ServerManager::broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Pack
 			auto playerPtr = iter->second.first;
 			NetworkManager::getInstance().sendPacket(playerPtr->m_fd, gameStartPacket, gameStartPacket.packetSize);
 		}
+		break;
+	}
+	case Packet::PacketID::ROOMINFO:
+	{
+		Player* playerPtr = ServerManager::getInstance().findPlayerUsingfd(clntfd);
+		if (!playerPtr)
+		{
+			return;
+		}
+		if (roomList.find(playerPtr->m_roomNum) == roomList.end())
+		{
+			return;
+		}
+		Room& room = roomList[playerPtr->m_roomNum];
+
+		Packet::RoomInfoPacket roomInfoPacket(room.curPartCnt);
+		NetworkManager::getInstance().sendPacket(playerPtr->m_fd, roomInfoPacket, roomInfoPacket.packetSize);
 		break;
 	}
 	default:

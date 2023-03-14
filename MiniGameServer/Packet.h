@@ -52,6 +52,7 @@ namespace Packet
 		PPCOLLIDERESULT,
 		HEART,
 		GAMEEND,
+		ROOMINFO,
 		// client -> server
 		UPDATE,
 		LOGINREQUEST,
@@ -177,6 +178,14 @@ namespace Packet
 		unsigned short packetSize = sizeof(GameEndPacket);
 		PacketID packetID = Packet::PacketID::GAMEEND;
 		PlayerGameEndInfo playerGameEndInfoArr[ServerProtocol::ROOM_MAXPARTCNT];
+	};
+
+	struct RoomInfoPacket
+	{
+		unsigned short packetSize = sizeof(RoomInfoPacket);
+		PacketID packetID = Packet::PacketID::ROOMINFO;
+		unsigned short roomPartCnt;
+		RoomInfoPacket(const unsigned short in_roomPartCnt);
 	};
 
 	// donghyun : 플-투 충돌 결과 패킷
