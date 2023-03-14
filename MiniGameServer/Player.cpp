@@ -96,7 +96,7 @@ void Player::decomposePacket(const char* packetChar)
 		if (IsCollided)
 		{
 			// donghyun : 힘 받을 direction vector 계산
-			for (int i = 0; i < 3; ++i)
+			for (int i = 0; i < 2; ++i)
 			{
 				dirVec[i] = m_position[i] - pmColliderRequestPacket.monsterPos[i];
 			}
@@ -190,13 +190,13 @@ void Player::decomposePacket(const char* packetChar)
 		if (IsCollided)
 		{
 			// donghyun : 힘 받을 direction vector 계산
-			for (int i = 0; i < 3; ++i)
+			for (int i = 0; i < 2; ++i)
 			{
 				dirVec[i] = m_position[i] - oppoPlayer->m_position[i];
 			}
 		}
 
-		for (int i = 0; i < 3; ++i)
+		for (int i = 0; i < 2; ++i)
 		{
 			oppoDirVec[i] = -dirVec[i];
 		}
