@@ -274,7 +274,7 @@ bool Player::checkCollide(const float* oppoPosVec, Packet::PacketID packetId)
 	case Packet::PacketID::PPCOLLIDERESULT:
 	{
 		float sqaureDist = 0.0f;
-		for (int i = 0; i < 3; ++i)
+		for (int i = 0; i < 2; ++i)
 		{
 			sqaureDist += pow(m_position[i] - oppoPosVec[i], 2);
 		}
