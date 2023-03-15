@@ -67,6 +67,8 @@ namespace Packet
 
 	TimerPacket::TimerPacket(short in_timeSecond)
 	{
+		packetSize = sizeof(TimerPacket);
+		packetID = Packet::PacketID::TIMER;
 		timeSecond = in_timeSecond;
 	}
 

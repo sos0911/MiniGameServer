@@ -156,8 +156,8 @@ namespace Packet
 	
 	struct TimerPacket
 	{
-		unsigned short packetSize;
-		PacketID packetID;
+		unsigned short packetSize = sizeof(TimerPacket);
+		PacketID packetID = Packet::PacketID::TIMER;
 		short timeSecond;
 		TimerPacket(short in_timeSecond);
 	};
