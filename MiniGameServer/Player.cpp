@@ -142,57 +142,57 @@ void Player::decomposePacket(const char* packetChar)
 				}
 			}
 
-			// donghyun : 만약 게임 종료 성립이라면 gameend 패킷 브로드캐스팅
-			if (1 == survivedPlayerCnt)
-			{
-				Player* firstRankPlayerPtr = nullptr;
-				// donghyun : 1등 정보 입력
-				for (auto iter = room->roomPartInfo.begin(); iter != room->roomPartInfo.end(); ++iter)
-				{
-					Player* playerPtr = iter->second.first;
-					if (playerPtr->m_heartCnt > 0)
-					{
-						firstRankPlayerPtr = playerPtr;
-						break;
-					}
-				}
+			//// donghyun : 만약 게임 종료 성립이라면 gameend 패킷 브로드캐스팅
+			//if (1 == survivedPlayerCnt)
+			//{
+			//	Player* firstRankPlayerPtr = nullptr;
+			//	// donghyun : 1등 정보 입력
+			//	for (auto iter = room->roomPartInfo.begin(); iter != room->roomPartInfo.end(); ++iter)
+			//	{
+			//		Player* playerPtr = iter->second.first;
+			//		if (playerPtr->m_heartCnt > 0)
+			//		{
+			//			firstRankPlayerPtr = playerPtr;
+			//			break;
+			//		}
+			//	}
 
-				if (!firstRankPlayerPtr)
-				{
-					break;
-				}
+			//	if (!firstRankPlayerPtr)
+			//	{
+			//		break;
+			//	}
 
-				// Get the end time
-				auto endTime = std::chrono::high_resolution_clock::now();
-				// Calculate the elapsed time in milliseconds
-				auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - room->gameStartTime);
-				firstRankPlayerPtr->m_surviveTime = elapsedTime.count();
-				firstRankPlayerPtr->m_rank = room->lastRankNum;
-				room->lastRankNum--;
+			//	// Get the end time
+			//	auto endTime = std::chrono::high_resolution_clock::now();
+			//	// Calculate the elapsed time in milliseconds
+			//	auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - room->gameStartTime);
+			//	firstRankPlayerPtr->m_surviveTime = elapsedTime.count();
+			//	firstRankPlayerPtr->m_rank = room->lastRankNum;
+			//	room->lastRankNum--;
 
-				Packet::GameEndPacket gameEndPacket;
-				// donghyun : 1등부터 채워 넣음
-				unsigned short curRank = 1;
-				for (int i = 0; i < ServerProtocol::ROOM_MAXPARTCNT; ++i)
-				{
-					for (auto iter = room->roomPartInfo.begin(); iter != room->roomPartInfo.end(); ++iter)
-					{
-						Player* playerPtr = iter->second.first;
-						if (playerPtr->m_rank == curRank)
-						{
-							Packet::PlayerGameEndInfo playerGameEndInfo(playerPtr->m_roomPlayerIdx, playerPtr->m_rank, playerPtr->m_surviveTime);
-							gameEndPacket.playerGameEndInfoArr[curRank - 1] = playerGameEndInfo;
-							curRank++;
-							break;
-						}
-					}
-				}
-				// donghyun : timer thread, spawn thread 중단
-				ServerManager::getInstance().deleteRoomTimerList(m_roomNum);
-				ServerManager::getInstance().stopSpawnThread(m_roomNum);
+			//	Packet::GameEndPacket gameEndPacket;
+			//	// donghyun : 1등부터 채워 넣음
+			//	unsigned short curRank = 1;
+			//	for (int i = 0; i < ServerProtocol::ROOM_MAXPARTCNT; ++i)
+			//	{
+			//		for (auto iter = room->roomPartInfo.begin(); iter != room->roomPartInfo.end(); ++iter)
+			//		{
+			//			Player* playerPtr = iter->second.first;
+			//			if (playerPtr->m_rank == curRank)
+			//			{
+			//				Packet::PlayerGameEndInfo playerGameEndInfo(playerPtr->m_roomPlayerIdx, playerPtr->m_rank, playerPtr->m_surviveTime);
+			//				gameEndPacket.playerGameEndInfoArr[curRank - 1] = playerGameEndInfo;
+			//				curRank++;
+			//				break;
+			//			}
+			//		}
+			//	}
+			//	// donghyun : timer thread, spawn thread 중단
+			//	ServerManager::getInstance().deleteRoomTimerList(m_roomNum);
+			//	ServerManager::getInstance().stopSpawnThread(m_roomNum);
 
-				ServerManager::getInstance().broadCastPacketInRoom(m_roomNum, gameEndPacket, Packet::PacketID::GAMEEND);
-			}
+			//	ServerManager::getInstance().broadCastPacketInRoom(m_roomNum, gameEndPacket, Packet::PacketID::GAMEEND);
+			//}
 		}
 
 		break;

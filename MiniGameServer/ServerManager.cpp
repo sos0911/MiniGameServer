@@ -42,16 +42,6 @@ void ServerManager::loginProcess(const SOCKET clntfd, const char* packetChar)
 		{
 			// donghyun : 현재 방 인원 패킷 전송
 			ServerManager::getInstance().broadCastPacketInRoom(clntfd, playerPtr->m_roomNum, Packet::PacketID::ROOMINFO);
-
-			// donghyun : 아직 마지막 방에 들어갈 수 있었음
-			// donghyun : 3명 다 들어왔는지 체크하고 맞으면 게임 시작 처리
-			if (roomList[lastRoomNum].curPartCnt == ServerProtocol::ROOM_MAXPARTCNT)
-			{
-				// donghyun : 해당 방을 일정 주기마다 타이머 증가시키는 방 리스트에 추가
-				addRoomTimerList(lastRoomNum);
-				std::cout << " gameReady logic!" << '\n';
-				gameReadyProcess(clntfd, lastRoomNum);
-			}
 		}
 		else
 		{
@@ -61,6 +51,16 @@ void ServerManager::loginProcess(const SOCKET clntfd, const char* packetChar)
 
 			// donghyun : 현재 방 인원 패킷 전송
 			ServerManager::getInstance().broadCastPacketInRoom(clntfd, playerPtr->m_roomNum, Packet::PacketID::ROOMINFO);
+		}
+
+		// donghyun : 아직 마지막 방에 들어갈 수 있었음
+			// donghyun : 3명 다 들어왔는지 체크하고 맞으면 게임 시작 처리
+		if (roomList[lastRoomNum].curPartCnt == ServerProtocol::ROOM_MAXPARTCNT)
+		{
+			// donghyun : 해당 방을 일정 주기마다 타이머 증가시키는 방 리스트에 추가
+			addRoomTimerList(lastRoomNum);
+			std::cout << " gameReady logic!" << '\n';
+			gameReadyProcess(clntfd, lastRoomNum);
 		}
 	}
 }
