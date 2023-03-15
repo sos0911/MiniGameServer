@@ -19,11 +19,11 @@ namespace ServerProtocol
 	constexpr unsigned int RANDNUM_SEEDRANGE = 1000;
 	constexpr unsigned int GAMEMAP_SIZE = 5;
 	// donghyun : 0번째 position 정보는 사용X
-	constexpr float PLAYER_INITPOS[5][3] = { {100.0f, -100.0f, 140.0f},
-										   {100.0f, 100.0f, 140.0f},
-										   {-100.0f, -100.0f, 140.0f},
-										   {-100.0f, 100.0f, 140.0f},
-										   {0.0f, 0.0f, 140.0f} };
+	constexpr float PLAYER_INITPOS[5][3] = { {300.0f, -300.0f, 240.0f},
+										   {300.0f, 300.0f, 240.0f},
+										   {-300.0f, -300.0f, 240.0f},
+										   {-300.0f, 300.0f, 240.0f},
+										   {0.0f, 0.0f, 240.0f} };
 	constexpr float PLAYER_COLLIDER_RADIUS = 110.0f;
 	// donghyun : 언리얼 기준 width (x축?)
 	constexpr float MONSTER_BOX_COLLIDER_WIDTH = 230.0f;
