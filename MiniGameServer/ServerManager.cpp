@@ -290,6 +290,9 @@ void ServerManager::quitRoom(const int roomNum, Player* playerPtr)
 	if (room.curPartCnt <= 0)
 	{
 		roomList.erase(room.roomNum);
+		// donghyun : timer thread, spawn thread 중단
+		ServerManager::getInstance().deleteRoomTimerList(roomNum);
+		ServerManager::getInstance().stopSpawnThread(roomNum);
 	}
 }
 
@@ -347,6 +350,10 @@ void ServerManager::stopSpawnThread(const int roomNum)
 		return;
 	}
 	m_spawnThreadSet[roomNum].request_stop();
+
+	// donghyun : 해당 spawn thread가 종료되기까지 기다린 후 erase
+	m_spawnThreadSet[roomNum].join();
+	m_spawnThreadSet.erase(roomNum);
 }
 
 void ServerManager::RunTimer()
