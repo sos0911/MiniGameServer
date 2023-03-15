@@ -17,7 +17,7 @@ namespace ServerProtocol
 
 	constexpr unsigned int TASK_UPDATE_PERIOD = 50;
 	constexpr unsigned int RANDNUM_SEEDRANGE = 1000;
-	constexpr unsigned int GAMEMAP_SIZE = 7;
+	constexpr unsigned int GAMEMAP_SIZE = 5;
 	// donghyun : 0번째 position 정보는 사용X
 	constexpr float PLAYER_INITPOS[5][3] = { {100.0f, -100.0f, 140.0f},
 										   {100.0f, 100.0f, 140.0f},
