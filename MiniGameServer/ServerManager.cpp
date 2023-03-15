@@ -189,6 +189,7 @@ void ServerManager::broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Pack
 	}
 	case Packet::PacketID::GAMEREADY:
 	{
+		std::cout << "gameready - room cnt : " << room.curPartCnt << '\n';
 		// donghyun : GameReadyPacket 패킷 제작
 		int playerPositionIdx = 0;
 		for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
@@ -328,6 +329,7 @@ void ServerManager::addRoomTimerList(const int roomNum)
 	{
 		return;
 	}
+	std::cout << "updateRoomTimerList added ! :: "<< roomNum<<'\n';
 	updateRoomTimerList.insert(roomNum);
 }
 
