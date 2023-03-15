@@ -195,6 +195,7 @@ void ServerManager::broadCastPacketInRoom(const SOCKET clntfd, int roomNum, Pack
 		{
 			// donghyun : 자기 자신도 브로드캐스팅함
 			auto playerPtr = iter->second.first;
+			std::cout << "gameready - player Name : " << playerPtr->m_name << '\n';
 			//Packet::PlayerInfo playerInfo(playerPtr->m_roomPlayerIdx, playerPtr->m_name.c_str(), playerPtr->m_position, playerPtr->m_rotation);
 			Packet::PlayerInfo playerInfo(playerPtr->m_roomPlayerIdx, playerPtr->m_name.c_str(), ServerProtocol::PLAYER_INITPOS[playerPositionIdx], playerPtr->m_rotation);
 			for (int i = 0; i < 3; ++i)
