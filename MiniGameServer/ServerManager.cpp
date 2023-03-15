@@ -461,7 +461,7 @@ void ServerManager::RunSpawner(const int roomNum)
 					}
 
 					// donghyun : mutex 적용
-					unsigned short curPlayTime = 0;
+					short curPlayTime = 0;
 					{
 						std::lock_guard<std::mutex> lockGuard(m_mutex);
 						curPlayTime = room.curPlayTime;

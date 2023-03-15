@@ -65,10 +65,8 @@ namespace Packet
 		playerInfo = in_playerInfo;
 	}
 
-	TimerPacket::TimerPacket(unsigned short in_timeSecond)
+	TimerPacket::TimerPacket(short in_timeSecond)
 	{
-		packetSize = sizeof(unsigned short) + sizeof(PacketID) + sizeof(unsigned short);
-		packetID = PacketID::TIMER;
 		timeSecond = in_timeSecond;
 	}
 

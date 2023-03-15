@@ -19,7 +19,7 @@ public:
 
 	int maxPartCnt, curPartCnt, roomNum;
 	// donghyun : 현재 게임이 진행된 시간 (초 단위)
-	unsigned short curPlayTime;
+	short curPlayTime;
 
 	// donghyun : 게임이 시작된 시간
 	std::chrono::steady_clock::time_point gameStartTime;

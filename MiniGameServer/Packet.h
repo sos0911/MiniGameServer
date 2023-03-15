@@ -159,8 +159,8 @@ namespace Packet
 	{
 		unsigned short packetSize;
 		PacketID packetID;
-		unsigned short timeSecond;
-		TimerPacket(unsigned short in_timeSecond);
+		short timeSecond;
+		TimerPacket(short in_timeSecond);
 	};
 
 	// donghyun : gameendPacket에 들어가는 playerGameEndInfo
