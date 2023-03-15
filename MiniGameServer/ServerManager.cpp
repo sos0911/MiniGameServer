@@ -301,7 +301,7 @@ bool ServerManager::addPlayer(Player& player)
 
 int ServerManager::getPlayerNum()
 {
-	return playerList.size();
+	return static_cast<int>(playerList.size());
 }
 
 int ServerManager::getLoginedPlayerNum()
@@ -417,7 +417,7 @@ void ServerManager::RunSpawner(const int roomNum)
 	std::jthread spawnThread = static_cast<std::jthread>
 		([this, roomNum](std::stop_token stoken)
 			{
-				int spawnPhaseIdx = 0;
+				int spawnPhaseIntervalIdx = 0;
 				while (!stoken.stop_requested())
 				{
 					// 특정 구간마다 깨어나서 해당 메소드 실행
@@ -467,14 +467,14 @@ void ServerManager::RunSpawner(const int roomNum)
 						curPlayTime = room.curPlayTime;
 					}
 
-					if (curPlayTime >= ServerProtocol::SPAWN_PHASE_TIMES[spawnPhaseIdx])
+					if (curPlayTime >= ServerProtocol::SPAWN_PHASE_TIMES[spawnPhaseIntervalIdx + 1])
 					{
-						spawnPhaseIdx++;
+						spawnPhaseIntervalIdx++;
 					}
 
-					std::cout << "spawnthread :: sleep for : " << ServerProtocol::SPAWN_PHASE_INTERVALS[spawnPhaseIdx - 1] << '\n';
+					std::cout << "spawnthread :: sleep for : " << ServerProtocol::SPAWN_PHASE_INTERVALS[spawnPhaseIntervalIdx] << '\n';
 
-					std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(ServerProtocol::SPAWN_PHASE_INTERVALS[spawnPhaseIdx - 1]));
+					std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(ServerProtocol::SPAWN_PHASE_INTERVALS[spawnPhaseIntervalIdx]));
 				}
 			});
 	
