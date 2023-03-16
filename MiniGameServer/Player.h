@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <chrono>
 #include "Packet.h"
 
 class Player
@@ -27,6 +28,8 @@ public:
 	unsigned short m_rank = 0;
 	// donghyun : 생존 시간
 	long long m_surviveTime = 0;
+	// donghyun : 가장 최근에 몬스터랑 충돌한 시각
+	std::chrono::steady_clock::time_point m_latestCollisionTime;
 
 	//donghyun : 맨 처음 클라 소켓 연결 요청 시 이름이 없을 때 사용하는 생성자
 	Player(char ip[], u_short port, SOCKET fd, std::string name);

@@ -14,13 +14,20 @@ Player::Player(char ip[], u_short port, SOCKET fd, std::string name) :
 	m_ip(ip), m_port(port), m_fd(fd), m_name(name)
 {
 	m_roomPlayerIdx = 0;
+	m_latestCollisionTime = std::chrono::high_resolution_clock::now();
 }
 
 Player::Player(SOCKET clntFd) :
-	m_ip(""), m_port(0), m_fd(clntFd), m_name(""), m_roomNum(-1) {}
+	m_ip(""), m_port(0), m_fd(clntFd), m_name(""), m_roomNum(-1)
+{
+	m_latestCollisionTime = std::chrono::high_resolution_clock::now();
+}
 
 Player::Player() :
-	m_ip(""), m_port(0), m_fd(0), m_name(""), m_roomNum(-1) {}
+	m_ip(""), m_port(0), m_fd(0), m_name(""), m_roomNum(-1)
+{
+	m_latestCollisionTime = std::chrono::high_resolution_clock::now();
+}
 
 Player::Player(const Player& player)
 {
@@ -29,6 +36,7 @@ Player::Player(const Player& player)
 	this->m_fd = player.m_fd;
 	this->m_name = player.m_name;
 	this->m_roomNum = player.m_roomNum;
+	this->m_latestCollisionTime = player.m_latestCollisionTime;
 }
 
 // donghyun : �÷��̾� ����Ʈ ��� �� ���
@@ -91,6 +99,15 @@ void Player::decomposePacket(const char* packetChar)
 		//std::cout << "monster position : " << pmColliderRequestPacket.monsterPos[0] << " : " << pmColliderRequestPacket.monsterPos[1] << " : " << pmColliderRequestPacket.monsterPos[2] << '\n';
 
 		float dirVec[3] = { 0.0f, 0.0f, 0.0f };
+
+		// donghyun : 해당 플레이어가 최근 충돌한 시각으로부터 무적 시간이 다 지났는지 검사
+		auto curTime = std::chrono::high_resolution_clock::now();
+		long long duration = std::chrono::duration_cast<std::chrono::milliseconds>(curTime - m_latestCollisionTime).count();
+		if (duration < ServerProtocol::PLAYER_SUPER_PERIOD)
+		{
+			return;
+		}
+		
 		bool IsCollided = checkCollide(pmColliderRequestPacket.monsterPos, Packet::PacketID::PMCOLLIDERESULT);
 
 		if (IsCollided)
@@ -100,6 +117,8 @@ void Player::decomposePacket(const char* packetChar)
 			{
 				dirVec[i] = m_position[i] - pmColliderRequestPacket.monsterPos[i];
 			}
+
+			m_latestCollisionTime = std::chrono::high_resolution_clock::now();
 		}
 
 		Packet::PMCollideResultPacket pmcollideResultPacket(m_roomPlayerIdx, IsCollided, dirVec);
