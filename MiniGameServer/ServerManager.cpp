@@ -74,7 +74,7 @@ void ServerManager::gameReadyProcess(const SOCKET clntfd, const int roomNum)
 	Room& room = roomList[roomNum];
 
 	// donghyun : 2명이 찼을 때 게임 시작 패킷 브로드캐스팅
-	broadCastPacketInRoom(clntfd, lastRoomNum, Packet::PacketID::GAMEREADY);
+	broadCastPacketInRoom(clntfd, roomNum, Packet::PacketID::GAMEREADY);
 }
 
 void ServerManager::gameStartProcess(const SOCKET clntfd, const int roomNum)
