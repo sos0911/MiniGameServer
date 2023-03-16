@@ -464,7 +464,7 @@ void ServerManager::RunSpawner(const int roomNum)
 						bool directionFlag = rand_num % 2 == 0 ? true : false;
 
 						// donghyun : 중복 스폰 체크
-						auto latestSpawnTime = room.latestSpawnInfoArr[IsHorizontal ? 1 : 0][lineIdx][directionFlag ? 1 : 0];
+						auto latestSpawnTime = room.latestSpawnInfoArr[IsHorizontal ? 1 : 0][lineIdx];
 						auto curTime = std::chrono::high_resolution_clock::now();
 						long long duration = std::chrono::duration_cast<std::chrono::milliseconds>(curTime - latestSpawnTime).count();
 
@@ -480,7 +480,7 @@ void ServerManager::RunSpawner(const int roomNum)
 								NetworkManager::getInstance().sendPacket(playerPtr->m_fd, spawnPacket, spawnPacket.packetSize);
 							}
 
-							room.latestSpawnInfoArr[IsHorizontal ? 1 : 0][lineIdx][directionFlag ? 1 : 0] = curTime;
+							room.latestSpawnInfoArr[IsHorizontal ? 1 : 0][lineIdx] = curTime;
 							break;
 						}
 					}

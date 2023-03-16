@@ -16,7 +16,7 @@ Room::Room()
 	roomNum = -1;
 	curPlayTime = ServerProtocol::ROOM_TIMER_STARTTIME;
 
-	std::fill(&latestSpawnInfoArr[0][0][0], &latestSpawnInfoArr[0][0][0] + sizeof(latestSpawnInfoArr) / sizeof(std::chrono::steady_clock::time_point), std::chrono::high_resolution_clock::now());
+	std::fill(&latestSpawnInfoArr[0][0], &latestSpawnInfoArr[0][0] + sizeof(latestSpawnInfoArr) / sizeof(std::chrono::steady_clock::time_point), std::chrono::high_resolution_clock::now());
 	isGameStart = false;
 }
 
@@ -37,6 +37,6 @@ Room::Room(int in_maxPartCnt, Player& in_player)
 
 	curPlayTime = ServerProtocol::ROOM_TIMER_STARTTIME;
 
-	std::fill(&latestSpawnInfoArr[0][0][0], &latestSpawnInfoArr[0][0][0] + sizeof(latestSpawnInfoArr) / sizeof(std::chrono::steady_clock::time_point), std::chrono::high_resolution_clock::now());
+	std::fill(&latestSpawnInfoArr[0][0], &latestSpawnInfoArr[0][0] + sizeof(latestSpawnInfoArr) / sizeof(std::chrono::steady_clock::time_point), std::chrono::high_resolution_clock::now());
 	isGameStart = false;
 }
