@@ -72,6 +72,7 @@ void ServerManager::gameReadyProcess(const SOCKET clntfd, const int roomNum)
 		return;
 	}
 	Room& room = roomList[roomNum];
+	room.isGameStart = true;
 
 	// donghyun : 2명이 찼을 때 게임 시작 패킷 브로드캐스팅
 	broadCastPacketInRoom(clntfd, roomNum, Packet::PacketID::GAMEREADY);
@@ -122,8 +123,8 @@ bool ServerManager::joinRoom(const int roomNum, const SOCKET clntfd)
 	}
 
 	Room& room = roomList[roomNum];
-	// donghyun : 만약 최대 인원보다 많아진다면 인원 초과로 입장 불가
-	if (room.curPartCnt >= room.maxPartCnt)
+	// donghyun : 만약 최대 인원보다 많아지거나 이미 게임이 진행 중이라면 인원 초과로 입장 불가
+	if (room.curPartCnt >= room.maxPartCnt || room.isGameStart)
 	{
 		return false;
 	}
