@@ -25,6 +25,8 @@ public:
 	std::chrono::steady_clock::time_point gameStartTime;
 	// donghyun : 게임의 현재 마지막 등수
 	unsigned short lastRankNum = ServerProtocol::ROOM_MAXPARTCNT;
+	// donghyun : spawn packet 중복 방지를 위한 타임맵
+	std::chrono::steady_clock::time_point latestSpawnInfoArr[2][ServerProtocol::GAMEMAP_SIZE + 1][2];
 
 	Room();
 	Room(int in_maxPartCnt, Player& in_player);

@@ -34,6 +34,8 @@ namespace ServerProtocol
 	constexpr short ROOM_TIMER_STARTTIME = -4;
 	// donghyun : 플레이어 충돌 후 무적 시간(ms)
 	constexpr long long PLAYER_SUPER_PERIOD = 2000;
+	// donghyun : 투왕 중복 스폰 간격(ms)
+	constexpr long long MONSTER_SPAWN_PERIOD = 2000;
 }
 #pragma pack(push,1)
 namespace Packet

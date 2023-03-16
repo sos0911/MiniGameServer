@@ -446,28 +446,42 @@ void ServerManager::RunSpawner(const int roomNum)
 
 					// now의 시간을 epoch 이후의 밀리초 단위로 계산한다.
 					auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
-
 					// now_ms의 시간을 시드로 사용하여 난수 생성기를 초기화한다.
 					auto seed = now_ms.time_since_epoch().count();
-					std::srand(static_cast<unsigned int>(seed));
-
-					int rand_num = -1;
-
-					rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
-					bool IsHorizontal = rand_num % 2 == 0 ? true : false;
-					rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
-					unsigned short lineIdx = rand_num % ServerProtocol::GAMEMAP_SIZE + 1;
-					rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
-					bool directionFlag = rand_num % 2 == 0 ? true : false;
-
-					Packet::SpawnPacket spawnPacket(IsHorizontal, lineIdx, directionFlag);
-					//std::cout << "spawn packet send :: " << IsHorizontal << " :: " << lineIdx << " :: " << directionFlag << '\n';
-
-					// 각 방의 플레이어들에게 스폰 패킷 전송
-					for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
+					
+					while (true)
 					{
-						auto playerPtr = iter->second.first;
-						NetworkManager::getInstance().sendPacket(playerPtr->m_fd, spawnPacket, spawnPacket.packetSize);
+						std::srand(static_cast<unsigned int>(seed));
+
+						int rand_num = -1;
+
+						rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
+						bool IsHorizontal = rand_num % 2 == 0 ? true : false;
+						rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
+						unsigned short lineIdx = rand_num % ServerProtocol::GAMEMAP_SIZE + 1;
+						rand_num = rand() % ServerProtocol::RANDNUM_SEEDRANGE + 1; // 1~1000 사이의 난수 생성
+						bool directionFlag = rand_num % 2 == 0 ? true : false;
+
+						// donghyun : 중복 스폰 체크
+						auto latestSpawnTime = room.latestSpawnInfoArr[IsHorizontal ? 1 : 0][lineIdx][directionFlag ? 1 : 0];
+						auto curTime = std::chrono::high_resolution_clock::now();
+						long long duration = std::chrono::duration_cast<std::chrono::milliseconds>(curTime - latestSpawnTime).count();
+
+						if (duration > ServerProtocol::MONSTER_SPAWN_PERIOD)
+						{
+							Packet::SpawnPacket spawnPacket(IsHorizontal, lineIdx, directionFlag);
+							//std::cout << "spawn packet send :: " << IsHorizontal << " :: " << lineIdx << " :: " << directionFlag << '\n';
+
+							// 각 방의 플레이어들에게 스폰 패킷 전송
+							for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
+							{
+								auto playerPtr = iter->second.first;
+								NetworkManager::getInstance().sendPacket(playerPtr->m_fd, spawnPacket, spawnPacket.packetSize);
+							}
+
+							room.latestSpawnInfoArr[IsHorizontal ? 1 : 0][lineIdx][directionFlag ? 1 : 0] = curTime;
+							break;
+						}
 					}
 
 					// donghyun : mutex 적용
