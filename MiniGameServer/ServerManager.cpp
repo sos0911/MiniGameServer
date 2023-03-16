@@ -394,7 +394,7 @@ void ServerManager::UpdateRoomTimer()
 
 		// donghyun : 타이머 패킷 만들어서 전송
 		Packet::TimerPacket timerPacket(room.curPlayTime);
-		std::cout << "Room "<<room.roomNum<<" :: "<<"current time : " << room.curPlayTime << '\n';
+		//std::cout << "Room "<<room.roomNum<<" :: "<<"current time : " << room.curPlayTime << '\n';
 
 		if (0 == room.curPlayTime)
 		{
@@ -461,7 +461,7 @@ void ServerManager::RunSpawner(const int roomNum)
 					bool directionFlag = rand_num % 2 == 0 ? true : false;
 
 					Packet::SpawnPacket spawnPacket(IsHorizontal, lineIdx, directionFlag);
-					std::cout << "spawn packet send :: " << IsHorizontal << " :: " << lineIdx << " :: " << directionFlag << '\n';
+					//std::cout << "spawn packet send :: " << IsHorizontal << " :: " << lineIdx << " :: " << directionFlag << '\n';
 
 					// 각 방의 플레이어들에게 스폰 패킷 전송
 					for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
@@ -482,7 +482,7 @@ void ServerManager::RunSpawner(const int roomNum)
 						spawnPhaseIntervalIdx++;
 					}
 
-					std::cout << "spawnthread :: sleep for : " << ServerProtocol::SPAWN_PHASE_INTERVALS[spawnPhaseIntervalIdx] << '\n';
+					//std::cout << "spawnthread :: sleep for : " << ServerProtocol::SPAWN_PHASE_INTERVALS[spawnPhaseIntervalIdx] << '\n';
 
 					std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(ServerProtocol::SPAWN_PHASE_INTERVALS[spawnPhaseIntervalIdx]));
 				}
