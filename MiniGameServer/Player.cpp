@@ -162,7 +162,7 @@ void Player::decomposePacket(const char* packetChar)
 					break;
 				}
 
-				std::cout << "player " << firstRankPlayerPtr->m_name << " wins!" << '\n';
+				std::cout << "Room " << firstRankPlayerPtr->m_roomNum<<" :: "<<"player " << firstRankPlayerPtr->m_name << " wins!" << '\n';
 
 				// Get the end time
 				auto endTime = std::chrono::high_resolution_clock::now();
