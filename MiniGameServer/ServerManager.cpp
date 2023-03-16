@@ -394,7 +394,7 @@ void ServerManager::UpdateRoomTimer()
 
 		// donghyun : 타이머 패킷 만들어서 전송
 		Packet::TimerPacket timerPacket(room.curPlayTime);
-		std::cout << "current time : " << room.curPlayTime << '\n';
+		std::cout << "Room "<<room.roomNum<<" :: "<<"current time : " << room.curPlayTime << '\n';
 
 		if (0 == room.curPlayTime)
 		{
