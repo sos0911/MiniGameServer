@@ -59,7 +59,7 @@ void ServerManager::loginProcess(const SOCKET clntfd, const char* packetChar)
 		{
 			// donghyun : 해당 방을 일정 주기마다 타이머 증가시키는 방 리스트에 추가
 			addRoomTimerList(lastRoomNum);
-			std::cout << " gameReady logic!" << '\n';
+			std::cout << "Room "<<lastRoomNum<<" :: "<< "gameReady logic!" << '\n';
 			gameReadyProcess(clntfd, lastRoomNum);
 		}
 	}
@@ -88,8 +88,8 @@ void ServerManager::gameStartProcess(const SOCKET clntfd, const int roomNum)
 	room.gameStartTime = std::chrono::high_resolution_clock::now();
 
 	// donghyun : 2명이 찼을 때 게임 시작 패킷 브로드캐스팅
-	broadCastPacketInRoom(clntfd, lastRoomNum, Packet::PacketID::GAMESTART);
-	RunSpawner(lastRoomNum);
+	broadCastPacketInRoom(clntfd, roomNum, Packet::PacketID::GAMESTART);
+	RunSpawner(roomNum);
 }
 
 void ServerManager::createRoom(const SOCKET clntfd, const unsigned short maxCnt)
@@ -398,7 +398,7 @@ void ServerManager::UpdateRoomTimer()
 
 		if (0 == room.curPlayTime)
 		{
-			std::cout << " gamestart logic!" << '\n';
+			std::cout << "Room " << roomNum << " :: " << "gameStart logic!" << '\n';
 			// donghyun : 그냥 방 안에 있는 아무나 인자로 넘김 (땜빵용)
 			for (auto iter = room.roomPartInfo.begin(); iter != room.roomPartInfo.end(); ++iter)
 			{
