@@ -30,7 +30,7 @@ namespace ServerProtocol
 	// donghyun : 언리얼 기준 height (y축?)
 	constexpr float MONSTER_BOX_COLLIDER_HEIGHT = 120.0f;
 
-	constexpr unsigned short ROOM_MAXPARTCNT = 2;
+	constexpr unsigned short ROOM_MAXPARTCNT = 3;
 	constexpr short ROOM_TIMER_STARTTIME = -4;
 }
 #pragma pack(push,1)
